@@ -1,0 +1,21 @@
+---- >> Matches (21 in 3 files) ----
+lcd_set_area in lcd.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\lcd) :     data[0] = (uint8_t)(x1 >> 8);
+lcd_set_area in lcd.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\lcd) :     data[2] = (uint8_t)(x2 >> 8);
+lcd_set_area in lcd.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\lcd) :     data[0] = (uint8_t)(y1 >> 8);
+lcd_set_area in lcd.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\lcd) :     data[2] = (uint8_t)(y2 >> 8);
+lcd_ram_draw_string in lcd.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\lcd) :                 switch (data >> 6)
+w25qxx_sector_erase in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :     cmd[1] = (uint8_t)(addr >> 16);
+w25qxx_sector_erase in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :     cmd[2] = (uint8_t)(addr >> 8);
+w25qxx_32k_block_erase in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :     cmd[1] = (uint8_t)(addr >> 16);
+w25qxx_32k_block_erase in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :     cmd[2] = (uint8_t)(addr >> 8);
+w25qxx_64k_block_erase in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :     cmd[1] = (uint8_t)(addr >> 16);
+w25qxx_64k_block_erase in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :     cmd[2] = (uint8_t)(addr >> 8);
+w25qxx_page_program in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :     cmd[1] = (uint8_t)(addr >> 16);
+w25qxx_page_program in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :     cmd[2] = (uint8_t)(addr >> 8);
+_w25qxx_read_data in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :             *(((uint8_t *)cmd) + 1) = (uint8_t)(addr >> 16);
+_w25qxx_read_data in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :             *(((uint8_t *)cmd) + 2) = (uint8_t)(addr >> 8);
+_w25qxx_read_data in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :             *(((uint8_t *)cmd) + 3) = (uint8_t)(addr >> 0);
+_w25qxx_read_data in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :             *(((uint8_t *)cmd) + 1) = (uint8_t)(addr >> 16);
+_w25qxx_read_data in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :             *(((uint8_t *)cmd) + 2) = (uint8_t)(addr >> 8);
+_w25qxx_read_data in w25qxx.c (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) :             *(((uint8_t *)cmd) + 3) = (uint8_t)(addr >> 0);
+w25qxx.h (F:\K210_ENV\SDK\kendryte-standalone-sdk-develop\src\object_detection\flash) line 59 : #define LETOBE(x)     ((x >> 24) | ((x & 0x00FF0000) >> 8) | ((x & 0x0000FF00) << 8) | (x << 24))
