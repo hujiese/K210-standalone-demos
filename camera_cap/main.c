@@ -36,25 +36,21 @@
 #include "picojpeg.h"
 #include "picojpeg_util.h"
 
+// 图像质量，60为最高
 #define CONFIG_JPEG_COMPRESS_QUALITY 60
+// jpeg区块长度
 #define CONFIG_JPEG_BUF_LEN 64
+// jpeg图片宽
 #define CONFIG_CAMERA_RESOLUTION_WIDTH 320
+// jpeg图片长
 #define CONFIG_CAMERA_RESOLUTION_HEIGHT 240
-
+// 转换jpeg图片缓冲区
 static uint8_t jpeg_buf[CONFIG_JPEG_BUF_LEN * 1024];
 static jpeg_encode_t jpeg_src, jpeg_out;
-
-#define DEBUG
-
-extern const unsigned char gImage_logo[153608];
-
+// 统计拍照次数
 volatile uint32_t g_count;
-
+// 保存图片标志位
 volatile uint8_t g_save_flag;
-
-
-static int check_sdcard(void);
-static int check_fat32(void);
 
 /**
 * Function       io_set_power
@@ -144,7 +140,7 @@ void init_key(void)
 {
     /* 设置按键的GPIO模式为上拉输入 */
     gpiohs_set_drive_mode(KEY_GPIONUM, GPIO_DM_INPUT_PULL_UP);
-    /* 设置按键的GPIO电平触发模式为上升沿和下降沿 */
+    /* 设置按键的GPIO电平触发模式为下降沿触发 */
     gpiohs_set_pin_edge(KEY_GPIONUM, GPIO_PE_FALLING);
     /* 设置按键GPIO口的中断回调 */
     gpiohs_irq_register(KEY_GPIONUM, 2, key_irq_cb, &g_count);
@@ -154,9 +150,9 @@ void init_key(void)
 * Function       convert_image2jpeg
 * @author        jackster
 * @date          2020.10.19
-* @brief         将 image rgb565图像字节数组转为jpeg图片数组
+* @brief         将 rgb565图像字节数组转为jpeg图片数组
 * @param[in]     image rgb565图像字节数组;Quality 转换质量
-* @param[out]    void
+* @param[out]    ret 值
 * @retval        void
 * @par History   无
 */
@@ -191,6 +187,16 @@ static int convert_image2jpeg(uint8_t *image, int Quality)
     return ret;
 }
 
+/**
+* Function       save_jpeg_sdcard
+* @author        jackster
+* @date          2020.10.19
+* @brief         将 rgb565图像字节数组转换为jpeg格式图片并写入sd卡中
+* @param[in]     image_addr 摄像头拍摄rgb565图片地址;filename 文件全路径名;img_quality 图像质量
+* @param[out]    成功返回1, 失败返回0
+* @retval        void
+* @par History   无
+*/
 int save_jpeg_sdcard(uint8_t *image_addr, const char *filename, int img_quality)
 {
     FIL file;
