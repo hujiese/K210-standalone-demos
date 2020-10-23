@@ -1107,7 +1107,13 @@ int32_t esp32_spi_ping(uint8_t *dest, uint8_t dest_type, uint8_t ttl)
     {
         memcpy(dest_array, dest, 4);
     }
-
+#if ESP32_SPI_DEBUG
+    int i = 0;
+    printk("dest_array: ");
+    for(; i < 6; ++i)
+        printk("%d,", dest_array[i]);
+    printk("\r\n");
+#endif
     esp32_spi_params_t *send = esp32_spi_params_alloc_2param(4, dest_array, 1, &sttl);
     esp32_spi_params_t *resp = esp32_spi_send_command_get_response(PING_CMD, send, NULL, 0, 0);
     send->del(send);
