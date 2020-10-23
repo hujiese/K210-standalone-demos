@@ -18,7 +18,7 @@
 
 #define IN_LAB
 
-#define TEST_NETWORK
+// #define TEST_NETWORK
 
 #ifdef IN_LAB
     char* WIFI_SSID = "scut_303";
@@ -116,23 +116,7 @@ int main(void)
 
     printf("------------------------------------------\n");
 
-    // uint8_t sock = connect_server_by_ip_port(ip, port);
-    // if(sock == 0xff)
-    // {
-    //     printf("connect server error !\n");
-    //     return -1;
-    // }
-
-    // char* str = "Hello World !\n";
-
-    // int writen_len = esp32_spi_socket_write(sock, str, sizeof(*str));
-    // if(!writen_len)
-    // {
-    //     printf("wirte socket err !\n");
-    //     return -2;
-    // }
-
-    // while(1);
+    while(1);
 #endif
 
     uint8_t sock = connect_server_by_ip_port(ip, port);
@@ -142,12 +126,15 @@ int main(void)
         return -1;
     }
 
-    uint8_t str[] = {'H','e','l','l','o',' ','W','o','r','l','d',' ','!'};
-    uint8_t exit[] = {'e','x','i','t'};
+    // uint8_t str[] = {'H','e','l','l','o',' ','W','o','r','l','d',' ','!'};
+    char* str = "Hello World !";
+    int str_len = strlen(*str);
+    uint8_t* uint8_str = (uint8_t *)malloc(str_len);
+    memcpy(uint8_str, str, str_len);
     int count = 5;
     while (1)
     {
-        int writen_len = esp32_spi_socket_write(sock, str, 13);
+        int writen_len = esp32_spi_socket_write(sock, (uint8_t *)str, 13);
         if(!writen_len)
         {
             printf("wirte socket err !\n");
@@ -160,7 +147,7 @@ int main(void)
         }
         sleep(2);
     }
-    
+    free(uint8_str);
     while(1);
 
     return 0;
