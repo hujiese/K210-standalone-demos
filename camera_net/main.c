@@ -47,7 +47,7 @@
 #define CONFIG_CAMERA_RESOLUTION_WIDTH 320
 // jpeg图片长
 #define CONFIG_CAMERA_RESOLUTION_HEIGHT 240
-// 一次性发送数据块大小
+// 一次性发送数据块大小，建议长度为2048
 #define SNDBUFSIZE 2048
 // 转换jpeg图片缓冲区
 static uint8_t jpeg_buf[CONFIG_JPEG_BUF_LEN * 1024];
@@ -56,21 +56,13 @@ static jpeg_encode_t jpeg_src, jpeg_out;
 volatile uint32_t g_count;
 // 保存图片标志位
 volatile uint8_t g_save_flag;
-
-// #define IN_LAB
-#ifdef IN_LAB
-    char* WIFI_SSID = "scut_303";
-    char* WIFI_PASSWD = "scutb8303";
-#else
-    // char* WIFI_SSID = "freewifi";
-    // char* WIFI_PASSWD = "jiaobaba";
-    char* WIFI_SSID = "DaGuLion";
-    char* WIFI_PASSWD = "abc360abc";
-#endif
-
+// WIFI热点和密码
+char* WIFI_SSID = "DaGuLion";
+char* WIFI_PASSWD = "abc360abc";
+// 服务器IP和端口
 uint8_t ip[] = {192, 168, 137, 65};
 uint16_t port = 8096;
-
+// 用于调试联网
 #define TEST_NETWORK
 
 #define MAX_IMG_LEN (1024 * 32)
@@ -213,33 +205,36 @@ static int convert_image2jpeg(uint8_t *image, int Quality)
 }
 
 /**
-* Function       save_jpeg_sdcard
+* Function       send_jpeg_server
 * @author        jackster
-* @date          2020.10.19
-* @brief         将 rgb565图像字节数组转换为jpeg格式图片并写入sd卡中
-* @param[in]     image_addr 摄像头拍摄rgb565图片地址;filename 文件全路径名;img_quality 图像质量
+* @date          2020.10.26
+* @brief         将 rgb565图像字节数组转换为jpeg格式图片上传到ip:port服务器上
+* @param[in]     image_addr 摄像头拍摄rgb565图片地址;sock 连接套接字; ip:port 服务器ip和端口;img_quality 图像质量
 * @param[out]    成功返回1, 失败返回0
 * @retval        void
 * @par History   无
 */
 int send_jpeg_server(uint8_t *image_addr, uint8_t sock, uint8_t* ip, uint16_t port, int img_quality)
 {
-    // FIL file;
-    // FRESULT ret = FR_OK;
-    // uint32_t ret_len = 0;
-
+    // 将rgb565图像转为jpeg数组
     if (convert_image2jpeg(image_addr, img_quality) == 0)
     {
+        // 分配足够大的缓冲区保存转换的jpeg数组，发送数据格式为： 4字节图像长度+jpeg字节数组
         uint8_t* img_buf = (uint8_t *)malloc(NET_IMG_BUF);
+        // 发送数据大小
         uint32_t i_len = 0;
+        // 缓冲区前四个字节用于标记图像大小
         *(uint32_t*)(img_buf+i_len)= htonl(jpeg_out.bpp);
+        // 发送长度加4字节
         i_len += sizeof(uint32_t);
+        // 将转换的jpeg数据写入缓冲区中
         memcpy(img_buf + i_len, jpeg_out.data, jpeg_out.bpp);
+        // 发送长度增加发送图像长度
         i_len += jpeg_out.bpp;
+        // 发送图像给远程服务器，这里的 SNDBUFSIZE 建议值为2048 (4096丢包太多，大于4096缓冲区会爆掉)
         uint32_t n_left;
         uint32_t n_written;
         uint8_t* img_buf_w_buf = img_buf;
-        // n_left = i_len;
         n_left = i_len;
         while(n_left > 0)
         {
@@ -268,6 +263,16 @@ int send_jpeg_server(uint8_t *image_addr, uint8_t sock, uint8_t* ip, uint16_t po
     return 0;
 }
 
+/**
+* Function       connect_server_by_ip_port
+* @author        jackster
+* @date          2020.10.26
+* @brief         连接ip:port服务器，并返回一个连接套接字
+* @param[in]     host 点分十进制字节Ip数组; port 16位长度端口
+* @param[out]    无
+* @retval        失败返回0xff;成功返回一个连接套接字
+* @par History   无
+*/
 uint8_t connect_server_by_ip_port(uint8_t* host, uint16_t port)
 {
     uint8_t sock = esp32_spi_get_socket();
@@ -358,7 +363,7 @@ int main(void)
     {
         ping_ip_success = esp32_spi_ping(ip, 0, 255);
         printf("ping 192.168.137.65: %d ms\n", ping_ip_success);
-        if(ping_ip_success > 0 && ping_ip_success < 255)
+        if(ping_ip_success >= 0 && ping_ip_success < 255)
             break;
         sleep(1);
     }

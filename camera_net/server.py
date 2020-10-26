@@ -28,38 +28,37 @@ def main():
 	serversocket.bind((host, port))
 	# 设置最大连接数，超过后排队
 	serversocket.listen(5)
-
+    # 用于生成图片名
 	count = 0
 
+	print('Server start ....')
 	while True:
 		# 建立客户端连接
 		conn, addr = serversocket.accept()  
 		print('connect from:', addr)
 		while True: 
+			# 生成图片名
 			count = count + 1
 			imgName = str(count) + '.jpeg'
+			# 创建jpeg文件
 			fp = open(imgName, 'wb')
 			try:
-				data = conn.recv(4) # 读取客户端发来的数据
+				data = conn.recv(4) # 先读取前四个字节数据，该数据为需要接收的图像大小
 				peer = conn.getpeername()
-				# read返回0，说明客户端关闭连接，将该客户端从监听列表中移除
+				# read返回0，说明客户端关闭连接
 				if not data:
 					print('client ', peer, ' off line ...')
 					conn.close()
 					break
-				dataLen = struct.unpack('!I', data)[0]
+				dataLen = struct.unpack('!I', data)[0] # 将接收的四个字节数据转为int32_t类型
 				print('receive from ', peer, ' ,data length is : ', dataLen)
-
-				img = b''
 				part = b''
+				# 接收并写入图像文件
 				while dataLen:
-					part = conn.recv(dataLen)
-					# img += part
+					part = conn.recv(dataLen) 
 					dataLen = dataLen - len(part)
-					print("len size = ", len(part))
 					fp.write(part)
 				fp.close()
-				# print(img)
 				print('write img ok ...')
 			except Exception:
 				print('Time out ...')	
