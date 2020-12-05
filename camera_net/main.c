@@ -60,7 +60,7 @@ volatile uint8_t g_save_flag;
 char* WIFI_SSID = "DaGuLion";
 char* WIFI_PASSWD = "abc360abc";
 // 服务器IP和端口
-uint8_t ip[] = {192, 168, 137, 27};
+uint8_t ip[] = {192, 168, 137, 230};
 uint16_t port = 8096;
 // 用于调试联网
 #define TEST_NETWORK
