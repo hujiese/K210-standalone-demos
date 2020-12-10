@@ -1,5 +1,9 @@
 package com.scut.hujie.netty;
 
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+
 public class Utils {
 
     public static final int SOCKET_SERVER_PORT = 18899;
@@ -20,4 +24,47 @@ public class Utils {
     public static final String IMG_READ_PATH = "F:\\K210_ENV\\server_img_buf\\";
     public static final String READ_IMG_NAME = "src.jpeg";
     public static final String READ_IMG_FULL_PATH = IMG_READ_PATH + READ_IMG_NAME;
+
+    // 写入图片耗时约50ms
+    public static void nioCopyFile(String path, int length, byte[] img) {
+        try {
+            File file = new File(path);
+            FileOutputStream out = null;
+            FileChannel fileChannel = null;
+            try {
+                if(!file.exists()){
+                    file.createNewFile();
+                }
+                out = new FileOutputStream(file);
+                fileChannel = out.getChannel();
+                ByteBuffer byteBuffer = ByteBuffer.allocate(length);
+                byteBuffer.put(img);
+                byteBuffer.flip();
+                fileChannel.write(byteBuffer);
+                byteBuffer.clear();
+                fileChannel.force(true);
+            } finally {
+                fileChannel.close();
+                out.close();
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    // 写入图片耗时约1ms
+    public static void oioCopyFile(String path, byte[] img) {
+        BufferedOutputStream bos = null;
+        try {
+            bos = new BufferedOutputStream(new FileOutputStream(path));
+            try {
+                bos.write(img);
+                bos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 }

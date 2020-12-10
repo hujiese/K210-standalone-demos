@@ -9,10 +9,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -81,34 +79,47 @@ public class Server {
     }
 
     class K210MsgDecoder extends ByteToMessageDecoder {
+
+        void setMsgErr(List<Object> out){
+            K210Msg msg = new K210Msg(1);
+            msg.setMsgOk(false);
+            out.add(msg);
+        }
+
         @Override
         public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-            byte magicNum = in.readByte(); // 获取魔数
-            // 魔数必须是0x66，而且后面有效荷载的长度要>=8字节
-            if(magicNum == Utils.MAGIC_NUM && in.readableBytes() >= Utils.MSG_MIN_PAYLOAD_LEN){
-                byte direction = in.readByte();
-                byte is_detect_object = in.readByte();
-                byte is_detect_car = in.readByte();
-                byte is_detect_person = in.readByte();
-                int distance = in.readInt();
-                int imgLength = in.readableBytes();
-                K210Msg msg = new K210Msg(imgLength);
-                msg.setMsgOk(true);
-                msg.setDirection(direction);
-                msg.set_detect_object(is_detect_object == Utils.BYTE_TRUE_FLAG ? true : false);
-                msg.set_detect_car(is_detect_car == Utils.BYTE_TRUE_FLAG ? true : false);
-                msg.set_detect_person(is_detect_person == Utils.BYTE_TRUE_FLAG ? true : false);
-                msg.setDistance(distance);
-                ByteBuf imgBuf = in.readBytes(imgLength);
-                byte[] imgBytes = new byte[imgBuf.readableBytes()];
-                imgBuf.readBytes(imgBytes);
+            try {
+                if(in.readableBytes() > 0){
+                    byte magicNum = in.readByte(); // 获取魔数
+                    // 魔数必须是0x66，而且后面有效荷载的长度要>=8字节
+                    if(magicNum == Utils.MAGIC_NUM && in.readableBytes() >= Utils.MSG_MIN_PAYLOAD_LEN){
+                        byte direction = in.readByte();
+                        byte is_detect_object = in.readByte();
+                        byte is_detect_car = in.readByte();
+                        byte is_detect_person = in.readByte();
+                        int distance = in.readInt();
+                        int imgLength = in.readableBytes();
+                        K210Msg msg = new K210Msg(imgLength);
+                        msg.setMsgOk(true);
+                        msg.setDirection(direction);
+                        msg.set_detect_object(is_detect_object == Utils.BYTE_TRUE_FLAG ? true : false);
+                        msg.set_detect_car(is_detect_car == Utils.BYTE_TRUE_FLAG ? true : false);
+                        msg.set_detect_person(is_detect_person == Utils.BYTE_TRUE_FLAG ? true : false);
+                        msg.setDistance(distance);
+                        ByteBuf imgBuf = in.readBytes(imgLength);
+                        byte[] imgBytes = new byte[imgBuf.readableBytes()];
+                        imgBuf.readBytes(imgBytes);
 //                msg.copyImage(imgBytes, 0, imgLength); // 深拷贝
-                msg.setJpegImage(imgBytes); // 浅拷贝
-                out.add(msg);
-            } else {
-                K210Msg msg = new K210Msg(1);
-                msg.setMsgOk(false);
-                out.add(msg);
+                        msg.setJpegImage(imgBytes); // 浅拷贝
+                        out.add(msg);
+                    } else {
+                        setMsgErr(out);
+                    }
+                }else{
+                    setMsgErr(out);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -118,38 +129,23 @@ public class Server {
         public Logger logger = Logger.getLogger(this.getClass().getName());
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            K210Msg k210Msg = (K210Msg)msg;
-            if(k210Msg.isMsgOk()) {
-                logger.info(msg.toString());
-                nioCopyFile(Utils.IMG_FULL_PATH, k210Msg.getJpegImage().length, k210Msg.getJpegImage());
+            try{
+                K210Msg k210Msg = (K210Msg)msg;
+                if(k210Msg.isMsgOk()) {
+                    logger.info(msg.toString());
+//                long startTime = System.currentTimeMillis();
+//                Utils.nioCopyFile(Utils.IMG_FULL_PATH, k210Msg.getJpegImage().length, k210Msg.getJpegImage());
+                    Utils.oioCopyFile(Utils.IMG_FULL_PATH, k210Msg.getJpegImage());
+//                long endTime = System.currentTimeMillis();
+//                logger.info("复制毫秒数：" + (endTime - startTime));
+                }
+                else{
+                    logger.info("receive msg fail !");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-       public void nioCopyFile(String path, int length, byte[] img) {
-           try {
-               File file = new File(path);
-               FileOutputStream out = null;
-               FileChannel fileChannel = null;
-               try {
-                   if(!file.exists()){
-                       file.createNewFile();
-                   }
-                   out = new FileOutputStream(file);
-                   fileChannel = out.getChannel();
-                   ByteBuffer byteBuffer = ByteBuffer.allocate(length);
-                   byteBuffer.put(img);
-                   byteBuffer.flip();
-                   fileChannel.write(byteBuffer);
-                   byteBuffer.clear();
-                   fileChannel.force(true);
-               } finally {
-                   fileChannel.close();
-                   out.close();
-               }
-           } catch (Exception e){
-               e.printStackTrace();
-           }
-       }
-
     }
 
 

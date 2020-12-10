@@ -50,7 +50,7 @@
 // 一次性发送数据块大小，建议长度为2048
 #define SNDBUFSIZE 2048
 // 转换jpeg图片缓冲区
-static uint8_t jpeg_buf[CONFIG_JPEG_BUF_LEN * 1024];
+static uint8_t jpeg_buf[CONFIG_JPEG_BUF_LEN * 2048];
 static jpeg_encode_t jpeg_src, jpeg_out;
 // 统计拍照次数
 volatile uint32_t g_count;
@@ -160,7 +160,7 @@ void init_key(void)
     /* 设置按键的GPIO电平触发模式为下降沿触发 */
     gpiohs_set_pin_edge(KEY_GPIONUM, GPIO_PE_FALLING);
     /* 设置按键GPIO口的中断回调 */
-    gpiohs_irq_register(KEY_GPIONUM, 0, key_irq_cb, &g_count);
+    gpiohs_irq_register(KEY_GPIONUM, 2, key_irq_cb, &g_count);
 }
 
 /**
@@ -205,6 +205,113 @@ static int convert_image2jpeg(uint8_t *image, int Quality)
 }
 
 /**
+* Function       connect_server_by_ip_port
+* @author        jackster
+* @date          2020.10.26
+* @brief         连接ip:port服务器，并返回一个连接套接字
+* @param[in]     host 点分十进制字节Ip数组; port 16位长度端口
+* @param[out]    无
+* @retval        失败返回0xff;成功返回一个连接套接字
+* @par History   无
+*/
+uint8_t connect_server_by_ip_port(uint8_t* host, uint16_t port)
+{
+    uint8_t sock = esp32_spi_get_socket();
+
+    if (sock != 0xff)
+    {
+        if (esp32_spi_socket_connect(sock, ip, 0, port, TCP_MODE) < 0)
+        {
+            return 0xff;
+        }
+    }
+    else
+    {
+        return 0xff;
+    }
+    return sock;
+}
+
+void reconnect_sock(uint8_t* host, uint16_t port, uint8_t sock) 
+{
+    esp32_spi_socket_close(sock);
+    sock = connect_server_by_ip_port(ip, port);
+    if(sock == 0xff)
+    {
+        printf("connect server error !\n");
+        return -1;
+    }
+}
+
+// uint32_t esp32_spi_socket_write2(uint8_t sock, uint8_t *buf, uint16_t len)
+// {
+//     int status = 0;
+//     status = esp32_spi_socket_status(sock);
+//     if(status == 0) // SOCKET_CLOSED
+//     {
+//         printf("send data err, reconnect1!\n");
+//         reconnect_sock(ip, port, sock);
+//         return -1;
+//     }
+//     uint64_t sent_len = 0;
+//     uint16_t len_send;
+//     while(1)
+//     {
+//         len_send = (len - sent_len) > SPI_MAX_DMA_LEN ? SPI_MAX_DMA_LEN : (len - sent_len);
+//         //TODO: esp32_spi_socket_write is nonblock in esp32 firmware
+//         if(esp32_spi_socket_write(sock, (uint8_t*)buf + sent_len, len_send ) == 0)
+//         {
+//             printf("write error !!!!\n");
+//             return -1;
+//         }
+//         sent_len += len_send;
+//         if(sent_len >= len)
+//             break;
+//     }
+	
+//     return len;
+// }
+
+int send_to_server(uint8_t sock, uint8_t* img_buf_w_buf, uint32_t n_left)
+{
+    uint32_t n_written;
+    while(n_left > 0)
+    {
+        if((n_written = esp32_spi_socket_write(sock, img_buf_w_buf, SNDBUFSIZE)) <= 0)
+        {
+            printf("wirte socket err1 !\n");
+            return -1;
+        }
+        n_left -= n_written;
+        img_buf_w_buf += n_written;
+        if(n_left < SNDBUFSIZE)
+        {
+            if((n_written = esp32_spi_socket_write(sock, img_buf_w_buf, n_left)) <= 0)
+            {
+                printf("wirte socket err2 !\n");
+                return -1;
+            }
+            break;
+        }
+    }
+    return 0;
+    // int block = n_left / SNDBUFSIZE;
+    // int left = n_left % SNDBUFSIZE;
+    // for(int i = 0; i < block; ++i)
+    // {
+    //     if(esp32_spi_socket_write(sock, img_buf_w_buf + i * SNDBUFSIZE, SNDBUFSIZE) <= 0)
+    //     {
+    //         printf("wirte socket err1 !\n");
+    //         return 0;
+    //     }
+    // }
+    // if(esp32_spi_socket_write(sock, img_buf_w_buf + block * SNDBUFSIZE, left) <= 0)
+    // {
+    //     printf("wirte socket err2 !\n");
+    //     return 0;
+    // }
+}
+/**
 * Function       send_jpeg_server
 * @author        jackster
 * @date          2020.10.26
@@ -242,62 +349,39 @@ int send_jpeg_server(uint8_t *image_addr, uint8_t sock, uint8_t* ip, uint16_t po
         i_len += jpeg_out.bpp;
         // 发送图像给远程服务器，这里的 SNDBUFSIZE 建议值为2048 (4096丢包太多，大于4096缓冲区会爆掉)
         uint32_t n_left;
-        uint32_t n_written;
         uint8_t* img_buf_w_buf = img_buf;
         n_left = i_len;
-        while(n_left > 0)
+        while(send_to_server(sock, img_buf_w_buf, n_left) == -1)
         {
-            if((n_written = esp32_spi_socket_write(sock, img_buf_w_buf, SNDBUFSIZE)) == 0)
-            {
-                printf("wirte socket err !\n");
-                return 0;
-            }
-            n_left -= n_written;
-            img_buf_w_buf += n_written;
-            if(n_left < SNDBUFSIZE)
-            {
-                if((n_written = esp32_spi_socket_write(sock, img_buf_w_buf, n_left)) == 0)
-                {
-                    printf("wirte socket err !\n");
-                    return 0;
-                }
-                break;
-            }
+            printf("send data err, reconnect and resend2!\n");
+            reconnect_sock(ip, port, sock);
         }
+        // uint32_t n_written;
+        // while(n_left > 0)
+        // {
+        //     if((n_written = esp32_spi_socket_write2(sock, img_buf_w_buf, SNDBUFSIZE)) == -1)
+        //     {
+        //         printf("wirte socket err1 !\n");
+        //         return 0;
+        //     }
+        //     n_left -= n_written;
+        //     img_buf_w_buf += n_written;
+        //     if(n_left < SNDBUFSIZE)
+        //     {
+        //         if((n_written = esp32_spi_socket_write2(sock, img_buf_w_buf, n_left)) == -1)
+        //         {
+        //             printf("wirte socket err2 !\n");
+        //             return 0;
+        //         }
+        //         break;
+        //     }
+        // }
         printf("send jpeg image ok...\n");
         free(img_buf);
         return 1;
     }
 
     return 0;
-}
-
-/**
-* Function       connect_server_by_ip_port
-* @author        jackster
-* @date          2020.10.26
-* @brief         连接ip:port服务器，并返回一个连接套接字
-* @param[in]     host 点分十进制字节Ip数组; port 16位长度端口
-* @param[out]    无
-* @retval        失败返回0xff;成功返回一个连接套接字
-* @par History   无
-*/
-uint8_t connect_server_by_ip_port(uint8_t* host, uint16_t port)
-{
-    uint8_t sock = esp32_spi_get_socket();
-
-    if (sock != 0xff)
-    {
-        if (esp32_spi_socket_connect(sock, ip, 0, port, TCP_MODE) != 0)
-        {
-            return 0xff;
-        }
-    }
-    else
-    {
-        return 0xff;
-    }
-    return sock;
 }
 
 /**
@@ -387,6 +471,7 @@ int main(void)
         printf("connect server error !\n");
         return -1;
     }
+    printf("connect server ok...\n");
 
     while (1)
     {
@@ -398,8 +483,7 @@ int main(void)
 
         if (g_save_flag)
         {
-            printf("prep send img to servr\n");
-            // 保存图片到sd卡中
+            //发送数据到服务端
             if(!send_jpeg_server((uint8_t*)(g_ram_mux ? display_buf_addr1 : display_buf_addr2), sock, ip, port, CONFIG_JPEG_COMPRESS_QUALITY))
             {
                 printf("save img fail !\n");
