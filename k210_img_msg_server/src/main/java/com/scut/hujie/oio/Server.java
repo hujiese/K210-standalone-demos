@@ -8,30 +8,17 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
 public class Server {
-    public static void main(String[] args) {
-        // 创建服务器Socket对象
-        ServerSocket ss = null;
-        try {
-            ss = new ServerSocket(Utils.SOCKET_SERVER_PORT);
-            while(!Thread.interrupted()){
-                Socket s = null;
-                DataInputStream  bis = null;
-                try {
-                    // 监听客户端连接
-                    s = ss.accept();
-                    while(true){
-                        // 封装通道内流
-                        try{
-                            bis = new DataInputStream (s.getInputStream());
-                        }catch (Exception e){
-                            e.printStackTrace();
-                            s.close();
-                            break;
-                        }
-                        int msgLength = bis.readInt();
-                        System.out.println(msgLength);
-                        byte[] msgPart = new byte[5]; // 获取识别信息
-                        bis.read(msgPart);
+
+    public static void handleRecvImg(DataInputStream bis){
+        try{
+            // 4字节首部长度+1字节魔数标识
+            if(bis.available() > 5){
+                int msgLength = bis.readInt();
+                if(msgLength <= Utils.RECV_BUFF_LENGTH){
+                    System.out.println(msgLength);
+                    byte[] msgPart = new byte[5]; // 获取识别信息
+                    bis.read(msgPart);
+                    if(msgPart[0] == Utils.MAGIC_NUM){
                         System.out.println(Arrays.toString(msgPart));
                         int distance = bis.readInt();
                         System.out.println(distance);
@@ -58,6 +45,44 @@ public class Server {
                             System.out.println("write img ok...");
                         }catch (Exception e){
                             e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+            try {
+                bis.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        // 创建服务器Socket对象
+        ServerSocket ss = null;
+        try {
+            ss = new ServerSocket(Utils.SOCKET_SERVER_PORT);
+            ss.setReuseAddress(true);
+            while(!Thread.interrupted()){
+                Socket s = null;
+                DataInputStream  bis = null;
+                try {
+                    // 监听客户端连接
+                    s = ss.accept();
+                    s.setKeepAlive(true);
+                    s.setTcpNoDelay(true);
+                    while(true){
+                        // 封装通道内流
+                        try{
+                            bis = new DataInputStream (s.getInputStream());
+                            handleRecvImg(bis);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            bis.close();
+                            s.close();
+                            break;
                         }
                     }
                 } catch (Exception e){

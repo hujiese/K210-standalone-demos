@@ -243,35 +243,6 @@ void reconnect_sock(uint8_t* host, uint16_t port, uint8_t sock)
     }
 }
 
-// uint32_t esp32_spi_socket_write2(uint8_t sock, uint8_t *buf, uint16_t len)
-// {
-//     int status = 0;
-//     status = esp32_spi_socket_status(sock);
-//     if(status == 0) // SOCKET_CLOSED
-//     {
-//         printf("send data err, reconnect1!\n");
-//         reconnect_sock(ip, port, sock);
-//         return -1;
-//     }
-//     uint64_t sent_len = 0;
-//     uint16_t len_send;
-//     while(1)
-//     {
-//         len_send = (len - sent_len) > SPI_MAX_DMA_LEN ? SPI_MAX_DMA_LEN : (len - sent_len);
-//         //TODO: esp32_spi_socket_write is nonblock in esp32 firmware
-//         if(esp32_spi_socket_write(sock, (uint8_t*)buf + sent_len, len_send ) == 0)
-//         {
-//             printf("write error !!!!\n");
-//             return -1;
-//         }
-//         sent_len += len_send;
-//         if(sent_len >= len)
-//             break;
-//     }
-	
-//     return len;
-// }
-
 int send_to_server(uint8_t sock, uint8_t* img_buf_w_buf, uint32_t n_left)
 {
     uint32_t n_written;
@@ -295,22 +266,8 @@ int send_to_server(uint8_t sock, uint8_t* img_buf_w_buf, uint32_t n_left)
         }
     }
     return 0;
-    // int block = n_left / SNDBUFSIZE;
-    // int left = n_left % SNDBUFSIZE;
-    // for(int i = 0; i < block; ++i)
-    // {
-    //     if(esp32_spi_socket_write(sock, img_buf_w_buf + i * SNDBUFSIZE, SNDBUFSIZE) <= 0)
-    //     {
-    //         printf("wirte socket err1 !\n");
-    //         return 0;
-    //     }
-    // }
-    // if(esp32_spi_socket_write(sock, img_buf_w_buf + block * SNDBUFSIZE, left) <= 0)
-    // {
-    //     printf("wirte socket err2 !\n");
-    //     return 0;
-    // }
 }
+
 /**
 * Function       send_jpeg_server
 * @author        jackster
@@ -356,26 +313,6 @@ int send_jpeg_server(uint8_t *image_addr, uint8_t sock, uint8_t* ip, uint16_t po
             printf("send data err, reconnect and resend2!\n");
             reconnect_sock(ip, port, sock);
         }
-        // uint32_t n_written;
-        // while(n_left > 0)
-        // {
-        //     if((n_written = esp32_spi_socket_write2(sock, img_buf_w_buf, SNDBUFSIZE)) == -1)
-        //     {
-        //         printf("wirte socket err1 !\n");
-        //         return 0;
-        //     }
-        //     n_left -= n_written;
-        //     img_buf_w_buf += n_written;
-        //     if(n_left < SNDBUFSIZE)
-        //     {
-        //         if((n_written = esp32_spi_socket_write2(sock, img_buf_w_buf, n_left)) == -1)
-        //         {
-        //             printf("wirte socket err2 !\n");
-        //             return 0;
-        //         }
-        //         break;
-        //     }
-        // }
         printf("send jpeg image ok...\n");
         free(img_buf);
         return 1;
