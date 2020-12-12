@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
+// k210作为客户端发送数据
 public class Server {
 
     public static void handleRecvImg(DataInputStream bis){
@@ -42,6 +43,7 @@ public class Server {
                             fileChannel.write(ByteBuffer.wrap(img)); //将字节流写入文件中
                             fileChannel.force(true);//强制刷新
                             fileChannel.close();
+                            out.close();
                             System.out.println("write img ok...");
                         }catch (Exception e){
                             e.printStackTrace();
