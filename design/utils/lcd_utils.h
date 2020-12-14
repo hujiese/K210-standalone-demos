@@ -3,6 +3,7 @@
 
 #include "fpioa.h"
 #include "gpiohs.h"
+#include "lcd.h"
 /*****************************HARDWARE-PIN*********************************/
 // 硬件IO口，与原理图对应
 #define PIN_LCD_CS             (36)

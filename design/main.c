@@ -18,12 +18,8 @@
 #include "ff.h"
 #include "uarths.h"
 #include "bsp.h"
-#include "lcd.h"
 #include "sysctl.h"
 #include "uarths.h"
-#include "ov2640.h"
-#include "dvp_cam.h"
-// #include "pin_config.h"
 #include "plic.h"
 #include "sleep.h"
 #include "rgb2bmp.h"
@@ -109,17 +105,30 @@ int main(void)
                     if(msg[3] == DETECT)
                     {
                         printk("cmd is detect.\n");
+                        g_save_flag = 1;
                         if(msg[4] == FORWARD)
                         {
                             printk("detect forward %d...\n", msg[4]);
+                            servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, 0);
+                            capture();
+                            long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
+                            printk("%ld cm\n", distance);
                         }
                         else if(msg[4] == LEFT)
                         {
                             printk("detect left %d...\n", msg[4]);
+                            servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, 90);
+                            capture();
+                            long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
+                            printk("%ld cm\n", distance);
                         }
                         else if(msg[4] == RIGHT)
                         {
                             printk("detect right %d...\n", msg[4]);
+                            servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, -90);
+                            capture();
+                            long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
+                            printk("%ld cm\n", distance);
                         }
                         else
                         {

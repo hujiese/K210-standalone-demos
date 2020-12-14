@@ -27,6 +27,8 @@ void lcd_config(void)
     fpioa_set_function(PIN_LCD_RST, FUNC_LCD_RST);
     fpioa_set_function(PIN_LCD_RS,  FUNC_LCD_RS);
     fpioa_set_function(PIN_LCD_WR,  FUNC_LCD_WR);
+
+    g_ram_mux = 0;
 }
 
 void dvp_camera_config(void)
@@ -40,6 +42,9 @@ void dvp_camera_config(void)
     fpioa_set_function(PIN_DVP_PCLK,  FUNC_CMOS_PCLK);
     fpioa_set_function(PIN_DVP_SCL,   FUNC_SCCB_SCLK);
     fpioa_set_function(PIN_DVP_SDA,   FUNC_SCCB_SDA);
+
+    /* 设置拍照flag为0 */
+    g_save_flag = 0;
 }
 
 void sonar_config(void)
@@ -112,5 +117,17 @@ void hardware_init(void)
     /* 初始化esp32 */
     esp32_spi_init();
 
+}
+
+void capture(void)
+{
+    /* 等待摄像头采集结束，然后清除结束标志 */
+    while (g_dvp_finish_flag == 0)
+        ;
+    g_ram_mux ^= 0x01;
+    g_dvp_finish_flag = 0;
+
+    /* 显示画面 */
+    lcd_draw_picture(0, 0, 320, 240, g_ram_mux ? display_buf_addr1 : display_buf_addr2);
 }
 #endif
