@@ -17,7 +17,4 @@
 #define PIN_DVP_SCL            (41)
 #define PIN_DVP_SDA            (40)
 
-// 保存图片标志位
-volatile uint8_t g_save_flag;
-
 #endif

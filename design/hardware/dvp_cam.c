@@ -5,6 +5,11 @@
 #include "sysctl.h"
 #include "iomem.h"
 
+uint8_t *g_ai_buf_in = NULL;
+uint32_t g_ai_red_buf_addr, g_ai_green_buf_addr, g_ai_blue_buf_addr;
+
+uint8_t *g_ai_od_buf = NULL;
+uint32_t g_ai_od_buf_addr;
 // uint32_t *display_buf = NULL;
 uint32_t display_buf_addr1 = NULL;
 uint32_t display_buf_addr2 = NULL;
@@ -40,7 +45,7 @@ void dvp_cam_init(void)
     /* 使能突发传输模式 */
     dvp_enable_burst();
     /* 关闭AI输出模式，使能显示模式 */
-    dvp_set_output_enable(DVP_OUTPUT_AI, 0);
+    dvp_set_output_enable(DVP_OUTPUT_AI, 1);
     dvp_set_output_enable(DVP_OUTPUT_DISPLAY, 1);
     /* 设置输出格式为RGB */
     dvp_set_image_format(DVP_CFG_RGB_FORMAT);
@@ -51,6 +56,16 @@ void dvp_cam_init(void)
     display_buf_addr1 = (uint32_t*)iomem_malloc(CAM_WIDTH_PIXEL * CAM_HIGHT_PIXEL * 2);
     display_buf_addr2 = (uint32_t*)iomem_malloc(CAM_WIDTH_PIXEL * CAM_HIGHT_PIXEL * 2);
     dvp_set_display_addr((uint32_t)display_buf_addr1);
+
+    g_ai_buf_in = (uint8_t*)iomem_malloc(CAM_WIDTH_PIXEL * CAM_HIGHT_PIXEL * 3);
+    g_ai_red_buf_addr =  (uint32_t)&g_ai_buf_in[0];
+    g_ai_green_buf_addr = (uint32_t)&g_ai_buf_in[CAM_WIDTH_PIXEL * CAM_HIGHT_PIXEL];
+    g_ai_blue_buf_addr = (uint32_t)&g_ai_buf_in[CAM_WIDTH_PIXEL * CAM_HIGHT_PIXEL * 2];
+    dvp_set_ai_addr((uint32_t)g_ai_red_buf_addr, (uint32_t)g_ai_green_buf_addr, (uint32_t)g_ai_blue_buf_addr);
+
+    //KPU_OD_image
+    g_ai_od_buf = (uint8_t*)iomem_malloc(320 * 256 * 3);
+    g_ai_od_buf_addr =  (uint32_t)&g_ai_od_buf[0];
 
     dvp_config_interrupt(DVP_CFG_START_INT_ENABLE | DVP_CFG_FINISH_INT_ENABLE, 0);
     dvp_disable_auto();
@@ -63,6 +78,9 @@ void dvp_cam_set_irq(void)
     plic_set_priority(IRQN_DVP_INTERRUPT, 1);
     plic_irq_register(IRQN_DVP_INTERRUPT, on_dvp_irq_cb, NULL);
     plic_irq_enable(IRQN_DVP_INTERRUPT);
+
+    // /* 使能系统全局中断 */
+    // sysctl_enable_irq();
 
     /* 清除DVP中断位 */
     g_ram_mux = 0;

@@ -6,6 +6,9 @@
 #define CAM_WIDTH_PIXEL        (320)
 #define CAM_HIGHT_PIXEL        (240)
 
+extern uint8_t *g_ai_buf_in, *g_ai_od_buf;
+extern uint32_t g_ai_red_buf_addr, g_ai_green_buf_addr, g_ai_blue_buf_addr, g_ai_od_buf_addr;
+
 extern volatile uint8_t g_ram_mux;
 extern uint32_t display_buf_addr1;
 extern uint32_t display_buf_addr2;

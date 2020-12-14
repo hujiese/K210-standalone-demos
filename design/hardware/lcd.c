@@ -127,6 +127,52 @@ void lcd_draw_string(uint16_t x, uint16_t y, char *str, uint16_t color)
     }
 }
 
+void lcd_ram_draw_string(char *str, uint32_t *ptr, uint16_t font_color, uint16_t bg_color)
+{
+    uint8_t i = 0;
+    uint8_t j = 0;
+    uint8_t data = 0;
+    uint8_t *pdata = NULL;
+    uint16_t width = 0;
+    uint32_t *pixel = NULL;
+
+    width = 4 * strlen(str);
+    while (*str)
+    {
+        pdata = (uint8_t *)&ascii0816[(*str) * 16];
+        for (i = 0; i < 16; i++)
+        {
+            data = *pdata++;
+            pixel = ptr + i * width;
+            for (j = 0; j < 4; j++)
+            {
+                switch (data >> 6)
+                {
+                    case 0:
+                        *pixel = ((uint32_t)bg_color << 16) | bg_color;
+                        break;
+                    case 1:
+                        *pixel = ((uint32_t)bg_color << 16) | font_color;
+                        break;
+                    case 2:
+                        *pixel = ((uint32_t)font_color << 16) | bg_color;
+                        break;
+                    case 3:
+                        *pixel = ((uint32_t)font_color << 16) | font_color;
+                        break;
+                    default:
+                        *pixel = 0;
+                        break;
+                }
+                data <<= 2;
+                pixel++;
+            }
+        }
+        str++;
+        ptr += 4;
+    }
+}
+
 /* 清除屏幕显示 */
 void lcd_clear(uint16_t color)
 {

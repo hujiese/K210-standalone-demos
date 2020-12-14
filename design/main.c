@@ -105,12 +105,12 @@ int main(void)
                     if(msg[3] == DETECT)
                     {
                         printk("cmd is detect.\n");
-                        g_save_flag = 1;
                         if(msg[4] == FORWARD)
                         {
                             printk("detect forward %d...\n", msg[4]);
                             servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, 0);
-                            capture();
+                            // capture();
+                            yolo_object_detect();
                             long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
                             printk("%ld cm\n", distance);
                         }
@@ -118,7 +118,8 @@ int main(void)
                         {
                             printk("detect left %d...\n", msg[4]);
                             servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, 90);
-                            capture();
+                            // capture();
+                            yolo_object_detect();
                             long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
                             printk("%ld cm\n", distance);
                         }
@@ -126,7 +127,8 @@ int main(void)
                         {
                             printk("detect right %d...\n", msg[4]);
                             servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, -90);
-                            capture();
+                            // capture();
+                            yolo_object_detect();
                             long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
                             printk("%ld cm\n", distance);
                         }
