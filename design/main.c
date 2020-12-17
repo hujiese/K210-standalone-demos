@@ -41,10 +41,6 @@
 // 转换jpeg图片缓冲区
 static uint8_t jpeg_buf[CONFIG_JPEG_BUF_LEN * 2048];
 static jpeg_encode_t jpeg_src, jpeg_out;
-// 统计拍照次数
-volatile uint32_t g_count;
-// 保存图片标志位
-volatile uint8_t g_save_flag;
 // WIFI热点和密码
 char* WIFI_SSID = "DaGuLion";
 char* WIFI_PASSWD = "abc360abc";
@@ -54,13 +50,106 @@ char* WIFI_PASSWD = "abc360abc";
 #define MAX_IMG_LEN (1024 * 32)
 #define NET_IMG_BUF (MAX_IMG_LEN + 4)
 
+uint8_t detect_result[5] = {0x66, 0x00, 0x00, 0x00, 0x00};
+
+static int convert_image2jpeg(uint8_t *image, int Quality)
+{
+    uint64_t v_tim;
+    v_tim = sysctl_get_time_us();
+
+    jpeg_src.w = CONFIG_CAMERA_RESOLUTION_WIDTH;
+    jpeg_src.h = CONFIG_CAMERA_RESOLUTION_HEIGHT;
+    jpeg_src.bpp = 2;
+    jpeg_src.data = image;
+
+    jpeg_out.w = jpeg_src.w;
+    jpeg_out.h = jpeg_src.h;
+    jpeg_out.bpp = CONFIG_JPEG_BUF_LEN * 1024;
+    jpeg_out.data = jpeg_buf;
+
+    v_tim = sysctl_get_time_us();
+    uint8_t ret = jpeg_compress(&jpeg_src, &jpeg_out, Quality, 0);
+    if (ret == 0)
+    {
+        printf("jpeg encode use %ld us\n", sysctl_get_time_us() - v_tim);
+        printf("w:%d\th:%d\tbpp:%d\n", jpeg_out.w, jpeg_out.h, jpeg_out.bpp);
+        printf("jpeg encode success!\n");
+    }
+    else
+    {
+        printf("jpeg encode failed\n");
+    }
+
+    return ret;
+}
+
+int send_msg(uint8_t sock, uint8_t* img_buf_w_buf, uint32_t n_left)
+{
+    uint32_t n_written;
+    while(n_left > 0)
+    {
+        if((n_written = esp32_spi_socket_write(sock, img_buf_w_buf, SNDBUFSIZE)) <= 0)
+        {
+            printf("wirte socket err1 !\n");
+            return -1;
+        }
+        n_left -= n_written;
+        img_buf_w_buf += n_written;
+        if(n_left < SNDBUFSIZE)
+        {
+            if((n_written = esp32_spi_socket_write(sock, img_buf_w_buf, n_left)) <= 0)
+            {
+                printf("wirte socket err2 !\n");
+                return -1;
+            }
+            break;
+        }
+    }
+    return 0;
+}
+
+int send_msg_to_client(uint8_t *image_addr, uint8_t* detect_msg, int distance, uint8_t sock, int img_quality)
+{
+    // 将rgb565图像转为jpeg数组
+    if (convert_image2jpeg(image_addr, img_quality) == 0)
+    {
+        // 分配足够大的缓冲区保存转换的jpeg数组，发送数据格式为： 4字节图像长度+jpeg字节数组
+        uint8_t* img_buf = (uint8_t *)malloc(NET_IMG_BUF);
+        // 发送数据大小
+        uint32_t i_len = 0;
+        // 缓冲区前四个字节用于标记图像大小
+        *(uint32_t*)(img_buf + i_len)= htonl(jpeg_out.bpp + 5 + 4);
+        // 发送缓冲区指针偏移4字节（记录包长度）
+        i_len += sizeof(uint32_t);
+        // 将detect_msg数据写入缓冲区中,detect_msg: 魔数、检测方向、是否检测到目标、是否检测到车、是否检测到人
+        memcpy(img_buf + i_len, detect_msg, 5);
+        // 发送缓冲区指针偏移5字节（detect_msg长度）
+        i_len += 5;
+        *(uint32_t*)(img_buf + i_len)= htonl(distance);//记录前方障碍物距离
+        // 发送缓冲区索引偏移4字节（障碍物距离）
+        i_len += sizeof(uint32_t);
+        // 将转换的jpeg数据写入缓冲区中
+        memcpy(img_buf + i_len, jpeg_out.data, jpeg_out.bpp);
+        // 发送长度增加发送图像长度
+        i_len += jpeg_out.bpp;
+        // 发送图像给客户端，这里的 SNDBUFSIZE 建议值为2048 (4096丢包太多，大于4096缓冲区会爆掉)
+        uint32_t n_left;
+        uint8_t* img_buf_w_buf = img_buf;
+        n_left = i_len;
+        if(send_msg(sock, img_buf_w_buf, n_left) == -1)
+        {
+            printf("send data err, reconnect and resend2!\n");
+        }
+        printf("send jpeg image ok...\n");
+        free(img_buf);
+        return 1;
+    }
+
+    return 0;
+}
+
 int main(void)
 {
-    // /* 设置拍照flag为0 */
-    // g_save_flag = 0;
-    
-    // g_ram_mux = 0;
-
     hardware_init();    
     
     while (esp32_spi_connect_AP(WIFI_SSID, WIFI_PASSWD, 5) != 0);
@@ -74,6 +163,7 @@ int main(void)
 	uint16_t port = 8080;
 	uint8_t sock = 1;
     allocate_socket(sock);
+    g_ram_mux = 0;
 	bool started = esp32_spi_start_server(sock, 0, 0, port, TCP_MODE);
     if (!started)
 	{
@@ -83,7 +173,6 @@ int main(void)
 	{
 		printf("Server failed to start\n");
 	}
-
     while(1)
     {
         int client_sock = esp32_spi_socket_available(sock);
@@ -105,38 +194,54 @@ int main(void)
                     if(msg[3] == DETECT)
                     {
                         printk("cmd is detect.\n");
-                        if(msg[4] == FORWARD)
+                        if(msg[4] == FORWARD || msg[4] == LEFT || msg[4] == RIGHT)
                         {
-                            printk("detect forward %d...\n", msg[4]);
-                            servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, 0);
-                            // capture();
+                            memset(detect_result, 0, 5);
+                            detect_result[0] = 0x66; // 设置魔数
+                            int angle = 0;
+                            if(msg[4] == FORWARD)
+                            {
+                                angle = FORWARD_ANGLE;
+                                detect_result[1] = 0x02;
+                            }
+                            else if(msg[4] == LEFT)
+                            {
+                                angle = LEFT_ANGLE;
+                                detect_result[1] = 0x03;
+                            }
+                            else if(msg[4] == RIGHT)
+                            {
+                                angle = RIGHT_ANGLE;
+                                detect_result[1] = 0x04;
+                            }
+                    
+                            servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, angle);
                             yolo_object_detect();
+                            // capture();
+                            if(class_detect_result[CARINDEX] == 0x01 || class_detect_result[BUSINDEX] == 0x01)
+                            {
+                                detect_result[2] = 0x01;
+                                detect_result[3] = 0x01;
+                                printk("detect car or bus !\n");
+                            }
+                            if(class_detect_result[PERSONINDEX] == 0x01)
+                            {
+                                detect_result[2] = 0x01;
+                                detect_result[4] = 0x01;
+                                printk("detect person !\n");
+                            }
                             long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
                             printk("%ld cm\n", distance);
-                        }
-                        else if(msg[4] == LEFT)
-                        {
-                            printk("detect left %d...\n", msg[4]);
-                            servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, 90);
-                            // capture();
-                            yolo_object_detect();
-                            long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
-                            printk("%ld cm\n", distance);
-                        }
-                        else if(msg[4] == RIGHT)
-                        {
-                            printk("detect right %d...\n", msg[4]);
-                            servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, -90);
-                            // capture();
-                            yolo_object_detect();
-                            long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
-                            printk("%ld cm\n", distance);
+                            printk("detect result: %d,%d,%d\n", detect_result[2], detect_result[3], detect_result[4]);
+                            if(!send_msg_to_client((uint8_t*)(g_ram_mux ? display_buf_addr1 : display_buf_addr2), detect_result, (int)distance, client_sock, CONFIG_JPEG_COMPRESS_QUALITY))
+                            {
+                                printf("save img fail !\n");
+                            }
                         }
                         else
                         {
                             printk("detect unknow %d...\n", msg[4]);
                         }
-                        
                     }
                 }
                 else
@@ -150,5 +255,3 @@ int main(void)
 
     return 0;
 }
-
-

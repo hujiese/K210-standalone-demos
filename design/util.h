@@ -13,6 +13,14 @@
 #define PLL0_OUTPUT_FREQ 800000000UL
 #define PLL1_OUTPUT_FREQ 400000000UL
 
+// 20类目标中车和人的索引号
+#define BUSINDEX 5
+#define CARINDEX 6
+#define PERSONINDEX 14
+
+// 用于标识20类中有那些被检测到了
+uint8_t class_detect_result[20] = {0x00};
+
 void io_set_power(void)
 {
     sysctl_set_power_mode(SYSCTL_POWER_BANK6, SYSCTL_POWER_V18);
@@ -158,24 +166,35 @@ void hardware_init(void)
 
 void capture(void)
 {
-    /* 等待摄像头采集结束，然后清除结束标志 */
-    while (g_dvp_finish_flag == 0)
-        ;
-    g_ram_mux ^= 0x01;
-    g_dvp_finish_flag = 0;
+    int count = 3;
+    while(count--)
+    {
+        /* 等待摄像头采集结束，然后清除结束标志 */
+        while (g_dvp_finish_flag == 0)
+            ;
+        g_dvp_finish_flag = 0;
+        g_ram_mux ^= 0x01;
+        /* 显示画面 */
+        lcd_draw_picture(0, 0, 320, 240, g_ram_mux ? display_buf_addr1 : display_buf_addr2);
+    }
+}
 
-    /* 显示画面 */
-    lcd_draw_picture(0, 0, 320, 240, g_ram_mux ? display_buf_addr1 : display_buf_addr2);
+void wait_camera_ready(void)
+{
+    int count = 3;
+    while(count--)
+    {
+        /* 等待摄像头采集结束，然后清除结束标志 */
+        while (g_dvp_finish_flag == 0)
+            ;
+        g_dvp_finish_flag = 0;
+        g_ram_mux ^= 0x01;
+    }
 }
 
 void yolo_object_detect(void)
 {
-    g_dvp_finish_flag = 0;
-        
-    while (!g_dvp_finish_flag)
-        ;
-    g_ram_mux ^= 0x01;
-    g_dvp_finish_flag = 0;
+    wait_camera_ready();
     /* run obj detect */
     memset(g_ai_od_buf, 127, 320*256*3);
     for (uint32_t cc = 0; cc < 3; cc++)
@@ -202,7 +221,5 @@ void yolo_object_detect(void)
 
     /* 画识别结果 */
     region_layer_draw_boxes(&obj_detect_rl, drawboxes);
-
-    // g_dvp_finish_flag = 0;
 }
 #endif

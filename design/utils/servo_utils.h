@@ -10,6 +10,10 @@
 #include <sysctl.h>
 #include <fpioa.h>
 
+#define FORWARD_ANGLE (0)
+#define LEFT_ANGLE (90)
+#define RIGHT_ANGLE (-90)
+
 #define TIMER_NOR (0)
 #define TIMER_CHN (0)
 #define TIMER_PWM (1)

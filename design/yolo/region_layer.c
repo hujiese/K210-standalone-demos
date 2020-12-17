@@ -1,7 +1,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
+#include "util.h"
 #include "region_layer.h"
+
+ extern uint8_t class_detect_result[20];
 
 typedef struct
 {
@@ -17,7 +21,6 @@ typedef struct
     int class;
     float **probs;
 } sortable_box_t;
-
 
 int region_layer_init(region_layer_t *rl, int width, int height, int channels, int origin_width, int origin_height)
 {
@@ -387,6 +390,7 @@ void region_layer_draw_boxes(region_layer_t *rl, callback_draw_box callback)
 	float threshold = rl->threshold;
 	box_t *boxes = (box_t *)rl->boxes;
 
+    memset(class_detect_result, 0, 20);
 	for (int i = 0; i < rl->boxes_number; ++i)
 	{
 		int class = max_index(rl->probs[i], rl->classes);
@@ -394,6 +398,8 @@ void region_layer_draw_boxes(region_layer_t *rl, callback_draw_box callback)
 
 		if (prob > threshold)
 		{
+            // 标记哪类目标被检测到了
+            class_detect_result[class] = 0x01;
 			box_t *b = boxes + i;
 			uint32_t x1 = b->x * image_width - (b->w * image_width / 2);
 			uint32_t y1 = b->y * image_height - (b->h * image_height / 2);

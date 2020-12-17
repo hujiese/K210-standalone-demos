@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include "kpu.h"
-
 typedef struct
 {
     uint32_t obj_number;
