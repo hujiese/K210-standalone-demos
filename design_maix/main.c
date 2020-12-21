@@ -139,7 +139,8 @@ int send_msg_to_client(uint8_t *image_addr, uint8_t* detect_msg, int distance, u
         n_left = i_len;
         if(send_msg(sock, img_buf_w_buf, n_left) == -1)
         {
-            printf("send data err, reconnect and resend2!\n");
+            printf("send data err !\n");
+            lcd_draw_string(5, lcd_str_x_index(), "Network error !!!", RED);
         }
         printf("send jpeg image ok...\n");
         free(img_buf);
@@ -152,10 +153,17 @@ int send_msg_to_client(uint8_t *image_addr, uint8_t* detect_msg, int distance, u
 int main(void)
 {
     hardware_init();    
-    
+    lcd_draw_string(5, lcd_str_x_index(), "Hardware init ok !", BLACK);   
     while (esp32_spi_connect_AP(WIFI_SSID, WIFI_PASSWD, 5) != 0);
 
-    printf("wifi connection state: %d....\n", esp32_spi_is_connected());
+    if(esp32_spi_is_connected() == 0)
+    {
+        lcd_draw_string(5, lcd_str_x_index(), "WIFI Connect ok !", BLACK);
+    }
+    else
+    {
+        lcd_draw_string(5, lcd_str_x_index(), "WIFI Connect fail !", RED);
+    }
 
 #ifdef TEST_NETWORK
     test_network();
@@ -168,20 +176,21 @@ int main(void)
 	bool started = esp32_spi_start_server(sock, 0, 0, port, TCP_MODE);
     if (!started)
 	{
-		printf("Server started on port %d\n", port);
+        lcd_draw_string(5, lcd_str_x_index(), "Server started on port 8080.", BLACK);
 	}
 	else
 	{
-		printf("Server failed to start\n");
+        lcd_draw_string(5, lcd_str_x_index(), "Server start fail !", RED);
 	}
     while(1)
     {
         int client_sock = esp32_spi_socket_available(sock);
         if (client_sock != 255 && client_sock != -1)
         {
-            printk("New client connect %d\n", client_sock);
+            lcd_draw_string(5, lcd_str_x_index(), "New client connect !", BLUE);
+            // printk("New client connect %d\n", client_sock);
             allocate_socket(client_sock);
-
+            lcd_clear(WHITE);
         }
         while(client_connected(&client_sock))
         {

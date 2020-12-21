@@ -222,4 +222,13 @@ void yolo_object_detect(void)
     /* 画识别结果 */
     region_layer_draw_boxes(&obj_detect_rl, drawboxes);
 }
+
+int lcd_str_x_index(void)
+{
+    static int lcd_x_index = -20;
+    lcd_x_index += 20;
+    if(lcd_x_index >= 120) 
+        lcd_x_index = 0;
+    return lcd_x_index;
+}
 #endif
