@@ -33,12 +33,10 @@ public class MainActivity extends AppCompatActivity {
     private Button forwardBtn = null;
     private Button rightBtn = null;
 
-    EventLoopGroup workerLoopGroup;
     Channel channel;
-    ChannelFuture f;
 
     public int port = 8080;
-    public String address = "192.168.137.238";
+    public String address = "192.168.137.51";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread() {
             @Override
             public void run() {
-                workerLoopGroup = new NioEventLoopGroup();
+                EventLoopGroup workerLoopGroup = new NioEventLoopGroup();
                 Bootstrap b = new Bootstrap();
                 try {
                     //1 设置reactor 线程组
@@ -105,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             // pipeline管理子通道channel中的Handler
                             // 向子channel流水线添加一个handler处理器
-                            ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Utils.RECV_BUFF_LENGTH, 0, 4, 0, 4));
+                            ch.pipeline().addLast(new MyLengthFieldBasedFrameDecoder(Utils.RECV_BUFF_LENGTH, 0, 4, 0, 4, handler));
                             ch.pipeline().addLast(new K210MsgDecoder());
                             ch.pipeline().addLast(new MsgHandler());
                         }
@@ -129,11 +127,15 @@ public class MainActivity extends AppCompatActivity {
                     channel = f.channel();
                     channel.closeFuture().sync();
                 } catch (Exception e) {
+                    Log.i("ERROR", "ERROR OCCURS !!!");
                     e.printStackTrace();
                 } finally {
                     // 优雅关闭EventLoopGroup，
                     // 释放掉所有资源包括创建的线程
+                    Log.i("ERROR", "RELEASE RESOURCE !");
+                    channel.close();
                     workerLoopGroup.shutdownGracefully();
+                    handler.obtainMessage(0x03).sendToTarget();
                 }
             }
         }.start();
@@ -163,6 +165,10 @@ public class MainActivity extends AppCompatActivity {
                     ByteBuf buffer3 = channel.alloc().buffer();
                     buffer3.writeBytes(cmd3);
                     channel.writeAndFlush(buffer3);
+                    break;
+                case 0x03:
+                    Log.i("Handler", "Reconnect ...");
+                    connect();
                     break;
                 default:
                     Log.i("Handler", "unknown command");
