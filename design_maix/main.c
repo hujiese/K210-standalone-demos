@@ -46,7 +46,7 @@ char* WIFI_SSID = "DaGuLion";
 char* WIFI_PASSWD = "abc360abc";
 // 用于调试联网
 #define TEST_NETWORK
-#define TEST_CAMERA_DETECT
+// #define TEST_CAMERA_DETECT
 
 #define MAX_IMG_LEN (1024 * 32)
 #define NET_IMG_BUF (MAX_IMG_LEN + 4)
@@ -111,6 +111,7 @@ int send_msg(uint8_t sock, uint8_t* img_buf_w_buf, uint32_t n_left)
 
 int send_msg_to_client(uint8_t *image_addr, uint8_t* detect_msg, int distance, uint8_t sock, int img_quality)
 {
+    int ret = 1;
     // 将rgb565图像转为jpeg数组
     if (convert_image2jpeg(image_addr, img_quality) == 0)
     {
@@ -141,10 +142,10 @@ int send_msg_to_client(uint8_t *image_addr, uint8_t* detect_msg, int distance, u
         {
             printf("send data err !\n");
             lcd_draw_string(5, lcd_str_x_index(), "Network error !!!", RED);
+            ret = -1;
         }
-        printf("send jpeg image ok...\n");
         free(img_buf);
-        return 1;
+        return ret;
     }
 
     return 0;
@@ -153,7 +154,8 @@ int send_msg_to_client(uint8_t *image_addr, uint8_t* detect_msg, int distance, u
 int main(void)
 {
     hardware_init();    
-    lcd_draw_string(5, lcd_str_x_index(), "Hardware init ok !", BLACK);   
+    lcd_draw_string(5, lcd_str_x_index(), "Hardware init ok !", BLACK);  
+    lcd_draw_string(5, lcd_str_x_index(), "Connecting WIFI...", BLACK);  
     while (esp32_spi_connect_AP(WIFI_SSID, WIFI_PASSWD, 5) != 0);
 
     if(esp32_spi_is_connected() == 0)
@@ -166,12 +168,16 @@ int main(void)
     }
 
 #ifdef TEST_NETWORK
-    test_network();
+    lcd_draw_string(5, lcd_str_x_index(), "Testing network...", BLACK);
+    if(test_network() > 0)
+        lcd_draw_string(5, lcd_str_x_index(), "Network ok !", BLACK);
+    else
+        lcd_draw_string(5, lcd_str_x_index(), "Network is bad, please reset !", RED);
 #endif
 
 	uint16_t port = 8080;
 	uint8_t sock = 1;
-    allocate_socket(sock);
+    // allocate_socket(sock);
     g_ram_mux = 0;
 	bool started = esp32_spi_start_server(sock, 0, 0, port, TCP_MODE);
     if (!started)
@@ -189,7 +195,7 @@ int main(void)
         {
             lcd_draw_string(5, lcd_str_x_index(), "New client connect !", BLUE);
             // printk("New client connect %d\n", client_sock);
-            allocate_socket(client_sock);
+            // allocate_socket(client_sock);
             lcd_clear(WHITE);
         }
         while(client_connected(&client_sock))
@@ -246,9 +252,16 @@ int main(void)
                             long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
                             printk("%ld cm\n", distance);
                             printk("detect result: %d,%d,%d\n", detect_result[2], detect_result[3], detect_result[4]);
-                            if(!send_msg_to_client((uint8_t*)(g_ram_mux ? display_buf_addr1 : display_buf_addr2), detect_result, (int)distance, client_sock, CONFIG_JPEG_COMPRESS_QUALITY))
+                            if(-1 == send_msg_to_client((uint8_t*)(g_ram_mux ? display_buf_addr1 : display_buf_addr2), detect_result, (int)distance, client_sock, CONFIG_JPEG_COMPRESS_QUALITY))
                             {
-                                printf("save img fail !\n");
+                                printf("send message fail !\n");
+                                printk("Client disconnect\n");
+                                client_stop(client_sock);
+                                break;
+                            }
+                            else
+                            {
+                                printf("send msg ok !\n");
                             }
                         }
                         else
@@ -263,7 +276,6 @@ int main(void)
                 }
             }
         }
-        client_stop(client_sock);
     }
 
     return 0;

@@ -19,26 +19,26 @@
 #define MSGLEN 6
 uint8_t msg[MSGLEN];
 
-// Maxmium number of socket
-#define	MAX_SOCK_NUM		4
-// Default state value for Wifi state field
-#define NA_STATE -1
+// // Maxmium number of socket
+// #define	MAX_SOCK_NUM		4
+// // Default state value for Wifi state field
+// #define NA_STATE -1
 
-static int16_t _state[MAX_SOCK_NUM] = { NA_STATE, NA_STATE, NA_STATE, NA_STATE };
-static uint16_t _server_port[MAX_SOCK_NUM] = { 0, 0, 0, 0 };
+// static int16_t _state[MAX_SOCK_NUM] = { NA_STATE, NA_STATE, NA_STATE, NA_STATE };
+// static uint16_t _server_port[MAX_SOCK_NUM] = { 0, 0, 0, 0 };
 
 // ping 服务器IP
 uint8_t ip[] = {192, 168, 137, 1};
 
-void allocate_socket(uint8_t sock)
-{
-  _state[sock] = sock;
-}
+// void allocate_socket(uint8_t sock)
+// {
+//   _state[sock] = sock;
+// }
 
-void release_socket(uint8_t sock)
-{
-  _state[sock] = NA_STATE;
-}
+// void release_socket(uint8_t sock)
+// {
+//   _state[sock] = NA_STATE;
+// }
 
 int available(uint8_t sock)
 {
@@ -64,7 +64,7 @@ int client_read_byte(uint8_t sock)
 
 	if (connClose)
 	{
-		release_socket(sock);
+		// release_socket(sock);
 		sock = 255;
 	}
 
@@ -82,7 +82,7 @@ int client_peek(uint8_t sock)
 
 	if (connClose)
 	{
-		release_socket(sock);
+		// release_socket(sock);
 		sock = 255;
 	}
 
@@ -119,7 +119,7 @@ uint8_t client_status(uint8_t* sock)
 		return SOCKET_ESTABLISHED;
 	}
 
-    release_socket(*sock);
+    // release_socket(*sock);
 	*sock = 255;
 
 	return SOCKET_CLOSED;
@@ -138,7 +138,7 @@ void client_stop(uint8_t sock)
     printk("Disconnecting %d\n", sock);
 	esp32_spi_socket_close(sock);
 
-	release_socket(sock);
+	// release_socket(sock);
 	sock = 255;
 }
 
@@ -167,22 +167,22 @@ int send_to_client(uint8_t sock, uint8_t* img_buf_w_buf, uint32_t n_left)
     return 0;
 }
 
-void test_network(void)
+int test_network(void)
 {
-	    printf("------------------------------------------\n");
+	printf("------------------------------------------\n");
 
-    int ping_www_count = 5;
-    int ping_www_success = 0;
-    while(ping_www_count--)
-    {
-        ping_www_success = esp32_spi_ping("www.baidu.com", 1, 255);
-        printf("ping www.baidu.com: %d ms\n", ping_www_success);
-        if(ping_www_success > 0)
-            break;
-        sleep(1);
-    }
+    // int ping_www_count = 5;
+    // int ping_www_success = 0;
+    // while(ping_www_count--)
+    // {
+    //     ping_www_success = esp32_spi_ping("www.baidu.com", 1, 255);
+    //     printf("ping www.baidu.com: %d ms\n", ping_www_success);
+    //     if(ping_www_success > 0)
+    //         break;
+    //     sleep(1);
+    // }
 
-    printf("------------------------------------------\n");
+    // printf("------------------------------------------\n");
 
     int ping_ip_count = 5;
     int ping_ip_success = 0;
@@ -196,5 +196,6 @@ void test_network(void)
     }
 
     printf("------------------------------------------\n");
+	return ping_ip_success;
 }
 #endif
