@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     Channel channel;
 
     public int port = 8080;
-    public String address = "192.168.137.51";
+    public String address = "192.168.137.234";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     // 优雅关闭EventLoopGroup，
                     // 释放掉所有资源包括创建的线程
                     Log.i("ERROR", "RELEASE RESOURCE !");
-                    channel.close();
+//                    channel.close();
                     workerLoopGroup.shutdownGracefully();
                     handler.obtainMessage(0x03).sendToTarget();
                 }
@@ -147,21 +147,21 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what) {
                 case 0x00:
                     Log.i("Handler", "detect left");
-                    byte[] cmd1 = {'C', 'M', 'D', 0x10, 0x21, 0x0f };
+                    byte[] cmd1 = {'C', 'M', 'D', 0x01, 0x21, 0x0f };
                     ByteBuf buffer1 = channel.alloc().buffer();
                     buffer1.writeBytes(cmd1);
                     channel.writeAndFlush(buffer1);
                     break;
                 case 0x01:
                     Log.i("Handler", "detect forward");
-                    byte[] cmd2 = {'C', 'M', 'D', 0x10, 0x20, 0x0f };
+                    byte[] cmd2 = {'C', 'M', 'D', 0x01, 0x20, 0x0f };
                     ByteBuf buffer2 = channel.alloc().buffer();
                     buffer2.writeBytes(cmd2);
                     channel.writeAndFlush(buffer2);
                     break;
                 case 0x02:
                     Log.i("Handler", "detect right");
-                    byte[] cmd3 = {'C', 'M', 'D', 0x10, 0x22, 0x0f };
+                    byte[] cmd3 = {'C', 'M', 'D', 0x01, 0x22, 0x0f };
                     ByteBuf buffer3 = channel.alloc().buffer();
                     buffer3.writeBytes(cmd3);
                     channel.writeAndFlush(buffer3);
