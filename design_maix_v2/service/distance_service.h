@@ -49,6 +49,7 @@ int do_distance(uint8_t arg, int client_sock)
         }
         n_left -= n_written;
     }
+    free(distance_buf);
     return 0;
 }
 #endif

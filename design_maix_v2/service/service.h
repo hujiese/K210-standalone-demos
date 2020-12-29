@@ -3,6 +3,7 @@
 
 #include "detect_service.h"
 #include "distance_service.h"
+#include "servo_service.h"
 
 /*
  *  一条返回的消息固定格式：
@@ -24,11 +25,6 @@
  *  
 */
 
-/* 舵机移动指令 'C' 'M' 'D' 0x03 0xxx 0x0f
- *                               0xxx为转动角度(0~180，需要转换为-90~90)
-*/
-#define SERVOMOVE 0x03
-
 /* 命令结束标志 */
 #define MSGENDFLAG 0x0f
 
@@ -44,6 +40,7 @@ int do_cmd(uint8_t cmd, uint8_t arg, int client_sock)
         ret = do_distance(arg, client_sock);
         break;
     case SERVOMOVE:
+        ret = do_servo(arg, client_sock);
         break;
     default:
         break;
