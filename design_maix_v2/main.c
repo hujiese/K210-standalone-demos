@@ -1,15 +1,3 @@
-/**
-* @par  Copyright (C): 2016-2022, SCUT
-* @file         main.c
-* @author       jackster
-* @version      V1.0
-* @date         2020.10.19
-* @brief        摄像头显示当前画面，拍照存入SD卡中
-* @details      
-* @par History  见如下说明
-*                 
-* version:	V1.0: 摄像头采集当前画面，然后在LCD上显示;通过boot按键拍照将图片保存为jpeg格式存入sd卡根目录中。
-*/
 #include <stdio.h>
 #include <string.h>
 #include "dmac.h"

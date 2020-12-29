@@ -1,5 +1,12 @@
 #ifndef __DETECTSERVICE_H__
 #define __DETECTSERVICE_H__
+/*
+ *  消息格式： 
+ * 
+ *  |--0-1-2-3-|--------4-------|---------------5-------------|-------6------|-------7------|-----8-----|--9~12---|------other-----|
+ *  | 消息长度 | 0x66(固定魔数) | 消息返回类型(0x02/0x03/0x04) | 检测目标标志 | 检测车辆标志 | 检测人标志 | 测距值  | 二进制图片内容 |
+ * 
+*/
 
 /* 目标检测指令 'C' 'M' 'D' 0x01 0x20/0x21/0x22 0x0f
  *                               三个方向检测   
@@ -17,6 +24,7 @@
 #define CARINDEX 6
 #define PERSONINDEX 14
 
+// 用于LCD显示
 extern int lcd_str_x_index(void);
 
 #define MAX_IMG_LEN (1024 * 32)
@@ -37,7 +45,19 @@ static jpeg_encode_t jpeg_src, jpeg_out;
 // 用于标识20类中有那些被检测到了
 uint8_t class_detect_result[20] = {0x00};
 
+/*
+ *  返回给客户端的部分消息头
+ *  detect_result[0]: 固定为0x66
+ *  detect_result[1]: 检测类型，分为L/F/R三种，分别对应为0x03/0x02/0x04
+ *  detect_result[2]: 是否检测到目标（人、车）
+ *  detect_result[3]: 是否检测到车
+ *  detect_result[4]: 是否检测到人
+*/
 uint8_t detect_result[5] = {0x66, 0x00, 0x00, 0x00, 0x00};
+// 用于填充返回消息类型
+#define RETFORWARD 0x02
+#define RETLEFT 0x03
+#define RETRIGHT 0x04
 
 int convert_image2jpeg(uint8_t *image, int Quality)
 {
@@ -123,17 +143,17 @@ int do_detect(uint8_t arg, int client_sock)
         if(msg[4] == FORWARD)
         {
             angle = FORWARD_ANGLE;
-            detect_result[1] = 0x02;
+            detect_result[1] = RETFORWARD;
         }
         else if(msg[4] == LEFT)
         {
             angle = LEFT_ANGLE;
-            detect_result[1] = 0x03;
+            detect_result[1] = RETLEFT;
         }
         else if(msg[4] == RIGHT)
         {
             angle = RIGHT_ANGLE;
-            detect_result[1] = 0x04;
+            detect_result[1] = RETRIGHT;
         }
 
         servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, angle);
