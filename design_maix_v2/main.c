@@ -46,7 +46,6 @@ int main(void)
         lcd_draw_string(5, lcd_str_x_index(), "Network is bad, please reset !", RED);
 #endif
 
-    // allocate_socket(sock);
     g_ram_mux = 0;
 	bool started = esp32_spi_start_server(sock, 0, 0, port, TCP_MODE);
     if (!started)
@@ -63,8 +62,6 @@ int main(void)
         if (client_sock != 255 && client_sock != -1)
         {
             lcd_draw_string(5, lcd_str_x_index(), "New client connect !", BLUE);
-            // printk("New client connect %d\n", client_sock);
-            // allocate_socket(client_sock);
             lcd_clear(WHITE);
         }
         while(client_connected(&client_sock))
