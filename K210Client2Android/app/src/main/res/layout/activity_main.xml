@@ -36,4 +36,35 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="180"
+        android:ems="10"
+        android:layout_below="@+id/left"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="36dp"
+        android:id="@+id/editAngle" />
+
+    <Button
+        android:text="SERVO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/servo"
+        android:layout_alignTop="@+id/editAngle"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:text="DISTANCE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/servo"
+        android:layout_alignLeft="@+id/forward"
+        android:layout_alignStart="@+id/forward"
+        android:layout_marginTop="19dp"
+        android:id="@+id/distance" />
+
 </RelativeLayout>

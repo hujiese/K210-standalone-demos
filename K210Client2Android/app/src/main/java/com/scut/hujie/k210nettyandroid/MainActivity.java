@@ -7,8 +7,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
-import java.util.Scanner;
+import com.scut.hujie.k210nettyandroid.decoder.K210MsgDecoder;
+import com.scut.hujie.k210nettyandroid.decoder.MsgHandler;
+import com.scut.hujie.k210nettyandroid.decoder.MyLengthFieldBasedFrameDecoder;
+import com.scut.hujie.k210nettyandroid.utils.Const;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -22,9 +27,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -32,11 +34,11 @@ public class MainActivity extends AppCompatActivity {
     private Button leftBtn = null;
     private Button forwardBtn = null;
     private Button rightBtn = null;
+    private Button servoBtn = null;
+    private Button distanceBtn = null;
+    private EditText editAngle = null;
 
     Channel channel;
-
-    public int port = 8080;
-    public String address = "192.168.137.234";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +55,15 @@ public class MainActivity extends AppCompatActivity {
         leftBtn = (Button) this.findViewById(R.id.left);
         forwardBtn = (Button)this.findViewById(R.id.forward);
         rightBtn = (Button)this.findViewById(R.id.right);
+        servoBtn = (Button)this.findViewById(R.id.servo);
+        distanceBtn = (Button)this.findViewById(R.id.distance);
+        editAngle = (EditText)this.findViewById(R.id.editAngle);
 
         leftBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
-                handler.obtainMessage(0x00).sendToTarget();
+                handler.obtainMessage(Const.DETECTLEFT).sendToTarget();
             }
         });
 
@@ -66,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                handler.obtainMessage(0x01).sendToTarget();
+                handler.obtainMessage(Const.DETECTFORWARD).sendToTarget();
             }
         });
 
@@ -74,7 +79,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                handler.obtainMessage(0x02).sendToTarget();
+                handler.obtainMessage(Const.DETECTRIGHT).sendToTarget();
+            }
+        });
+        servoBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                handler.obtainMessage(Const.SERVOMOVE).sendToTarget();
+            }
+        });
+        distanceBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                handler.obtainMessage(Const.DISTANCE).sendToTarget();
             }
         });
     }
@@ -93,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                     b.option(ChannelOption.SO_KEEPALIVE, true);
                     b.option(ChannelOption.TCP_NODELAY, true);
                     //3 设置监听端口
-                    b.remoteAddress(address, port);
+                    b.remoteAddress(Const.ADDRESS, Const.PORT);
                     //4 设置通道的参数
                     b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
@@ -103,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             // pipeline管理子通道channel中的Handler
                             // 向子channel流水线添加一个handler处理器
-                            ch.pipeline().addLast(new MyLengthFieldBasedFrameDecoder(Utils.RECV_BUFF_LENGTH, 0, 4, 0, 4, handler));
+                            ch.pipeline().addLast(new MyLengthFieldBasedFrameDecoder(Const.RECV_BUFF_LENGTH, 0, 4, 0, 4, handler));
                             ch.pipeline().addLast(new K210MsgDecoder());
                             ch.pipeline().addLast(new MsgHandler());
                         }
@@ -133,9 +150,8 @@ public class MainActivity extends AppCompatActivity {
                     // 优雅关闭EventLoopGroup，
                     // 释放掉所有资源包括创建的线程
                     Log.i("ERROR", "RELEASE RESOURCE !");
-//                    channel.close();
                     workerLoopGroup.shutdownGracefully();
-                    handler.obtainMessage(0x03).sendToTarget();
+                    handler.obtainMessage(Const.RECONNECT).sendToTarget();
                 }
             }
         }.start();
@@ -145,28 +161,31 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case 0x00:
+                case Const.DETECTLEFT:
                     Log.i("Handler", "detect left");
-                    byte[] cmd1 = {'C', 'M', 'D', 0x01, 0x21, 0x0f };
-                    ByteBuf buffer1 = channel.alloc().buffer();
-                    buffer1.writeBytes(cmd1);
-                    channel.writeAndFlush(buffer1);
+                    sendCmdtoK210(Const.CMD_DETECT, Const.LEFT_DIRECTION);
                     break;
-                case 0x01:
+                case Const.DETECTFORWARD:
                     Log.i("Handler", "detect forward");
-                    byte[] cmd2 = {'C', 'M', 'D', 0x01, 0x20, 0x0f };
-                    ByteBuf buffer2 = channel.alloc().buffer();
-                    buffer2.writeBytes(cmd2);
-                    channel.writeAndFlush(buffer2);
+                    sendCmdtoK210(Const.CMD_DETECT, Const.FORWARD_DIRECTION);
                     break;
-                case 0x02:
+                case Const.DETECTRIGHT:
                     Log.i("Handler", "detect right");
-                    byte[] cmd3 = {'C', 'M', 'D', 0x01, 0x22, 0x0f };
-                    ByteBuf buffer3 = channel.alloc().buffer();
-                    buffer3.writeBytes(cmd3);
-                    channel.writeAndFlush(buffer3);
+                    sendCmdtoK210(Const.CMD_DETECT, Const.RIGHT_DIRECTION);
                     break;
-                case 0x03:
+                case Const.DISTANCE:
+                    Log.i("Handler", "distance");
+                    sendCmdtoK210(Const.CMD_DISTANCE, Const.EMP_ARG);
+                    break;
+                case Const.SERVOMOVE:
+                    Log.i("Handler", "move servo");
+                    String angleVlaue = editAngle.getText().toString().trim();
+                    int angle = 180;
+                    if(angleVlaue != null)
+                        angle = Integer.valueOf(angleVlaue);
+                    sendCmdtoK210(Const.CMD_SERVO, (byte)angle);
+                    break;
+                case Const.RECONNECT:
                     Log.i("Handler", "Reconnect ...");
                     connect();
                     break;
@@ -176,4 +195,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    public void sendCmdtoK210(byte cmd, byte arg){
+        byte[] msg = {'C', 'M', 'D', cmd, arg, Const.CMD_END_FLAG };
+        ByteBuf buffer = channel.alloc().buffer();
+        buffer.writeBytes(msg);
+        channel.writeAndFlush(buffer);
+    }
 }

@@ -1,14 +1,16 @@
-package com.scut.hujie.k210nettyandroid;
+package com.scut.hujie.k210nettyandroid.decoder;
 
 import android.os.Handler;
 import android.util.Log;
+
+import com.scut.hujie.k210nettyandroid.utils.Const;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.CorruptedFrameException;
 import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.TooLongFrameException;
+
 import java.nio.ByteOrder;
 import java.util.List;
 
@@ -209,7 +211,7 @@ public class MyLengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
             Log.e("ERROR- ", "Adjusted frame length exceeds " + this.maxFrameLength + " - discarding");
 //            throw new TooLongFrameException("Adjusted frame length exceeds " + this.maxFrameLength + " - discarding");
         }
-        handler.obtainMessage(0x03).sendToTarget();
+        handler.obtainMessage(Const.RECONNECT).sendToTarget();
     }
 }
 
