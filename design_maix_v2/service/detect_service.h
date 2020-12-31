@@ -54,10 +54,10 @@ uint8_t class_detect_result[20] = {0x00};
  *  detect_result[4]: 是否检测到人
 */
 uint8_t detect_result[5] = {0x66, 0x00, 0x00, 0x00, 0x00};
-// 用于填充返回消息类型
-#define RETFORWARD 0x02
-#define RETLEFT 0x03
-#define RETRIGHT 0x04
+// // 用于填充返回消息类型
+// #define RETFORWARD 0x02
+// #define RETLEFT 0x03
+// #define RETRIGHT 0x04
 
 int convert_image2jpeg(uint8_t *image, int Quality)
 {
@@ -92,7 +92,7 @@ int convert_image2jpeg(uint8_t *image, int Quality)
 
 int send_msg_to_client(uint8_t *image_addr, uint8_t* detect_msg, int distance, uint8_t sock, int img_quality)
 {
-    int ret = 1;
+    int ret = 0;
     // 将rgb565图像转为jpeg数组
     if (convert_image2jpeg(image_addr, img_quality) == 0)
     {
@@ -126,10 +126,9 @@ int send_msg_to_client(uint8_t *image_addr, uint8_t* detect_msg, int distance, u
             ret = -1;
         }
         free(img_buf);
-        return ret;
     }
 
-    return 0;
+    return ret;
 }
 
 int do_detect(uint8_t arg, int client_sock)
@@ -143,17 +142,17 @@ int do_detect(uint8_t arg, int client_sock)
         if(msg[4] == FORWARD)
         {
             angle = FORWARD_ANGLE;
-            detect_result[1] = RETFORWARD;
+            detect_result[1] = FORWARD;
         }
         else if(msg[4] == LEFT)
         {
             angle = LEFT_ANGLE;
-            detect_result[1] = RETLEFT;
+            detect_result[1] = LEFT;
         }
         else if(msg[4] == RIGHT)
         {
             angle = RIGHT_ANGLE;
-            detect_result[1] = RETRIGHT;
+            detect_result[1] = RIGHT;
         }
 
         servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, angle);

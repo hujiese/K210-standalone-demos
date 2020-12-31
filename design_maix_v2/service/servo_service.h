@@ -23,6 +23,7 @@ uint8_t servo_result[SERVO_PAYLOAD_LEN] = {0x66, 0x06, 0x01, 0x00, 0x00, 0x00, 0
 int do_servo(uint8_t arg, int client_sock)
 {
     printk("cmd is servo.\n");
+    int ret = 0;
     int angle = (int)arg - 90;// arg为0~180度，需要转换为-90~90度
     // 测距
     servo_move_angle(TIMER_PWM, TIMER_PWM_CHN0, SERVO_FREQ, angle);
@@ -36,19 +37,22 @@ int do_servo(uint8_t arg, int client_sock)
     i_len += sizeof(uint32_t);
     memcpy(servo_buf + i_len, servo_result, 10);
     // 发送缓冲区指针偏移5字节（detect_msg长度）
-    i_len += 10;
+    i_len += 9;
+    *(uint32_t*)(servo_buf + i_len)= SERVOMOVE; //消息结尾
+    i_len += 1;
     uint32_t n_left = i_len;
     uint32_t n_written;
     while(n_left > 0)
     {
-        if((n_written = esp32_spi_socket_write(client_sock, servo_buf, SERVO_MSG_LEN)) <= 0)
+        if((n_written = esp32_spi_socket_write(client_sock, servo_buf, n_left)) <= 0)
         {
             printf("wirte socket err !\n");
-            return -1;
+            ret = -1;
+            break;
         }
         n_left -= n_written;
     }
     free(servo_buf);
-    return 0;
+    return ret;
 }
 #endif

@@ -22,6 +22,7 @@ uint8_t distance_result[5] = {0x66, 0x05, 0x00, 0x00, 0x00};
 int do_distance(uint8_t arg, int client_sock)
 {
     printk("cmd is distance.\n");
+    int ret = 0;
     // 测距
     long distance = ultrasonic_measure_cm(FUNC_TRIG, FUNC_ECHO, 3000000);
     // 创建发送缓冲区
@@ -38,18 +39,21 @@ int do_distance(uint8_t arg, int client_sock)
     *(uint32_t*)(distance_buf + i_len)= htonl(distance);//记录前方障碍物距离
     // 发送缓冲区索引偏移4字节（障碍物距离）
     i_len += sizeof(uint32_t);
+    *(uint32_t*)(distance_buf + i_len)= DISTANCE; //消息结尾
+    i_len += 1;
     uint32_t n_left = i_len;
     uint32_t n_written;
     while(n_left > 0)
     {
-        if((n_written = esp32_spi_socket_write(client_sock, distance_buf, DISTANCE_MSG_LEN)) <= 0)
+        if((n_written = esp32_spi_socket_write(client_sock, distance_buf, n_left)) <= 0)
         {
             printf("wirte socket err !\n");
-            return -1;
+            ret = -1;
+            break;
         }
         n_left -= n_written;
     }
     free(distance_buf);
-    return 0;
+    return ret;
 }
 #endif
