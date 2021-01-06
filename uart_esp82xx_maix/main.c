@@ -23,17 +23,14 @@
 
 int on_uart_send(void *ctx)
 {
-    uint8_t v_uart = *((uint32_t *)ctx) + 1 + 0x30;
-    uart_irq_unregister(UART_NUM, UART_SEND);
-    char *v_send_ok = "Send ok Uart: ";
-    uart_send_data(UART_NUM, v_send_ok,strlen(v_send_ok));
-    uart_send_data(UART_NUM, (char *)&v_uart,1);
+    // uint8_t v_uart = *((uint32_t *)ctx) + 1 + 0x30;
+    // uart_irq_unregister(UART_NUM, UART_SEND);
+    // char *v_send_ok = "Send ok Uart: ";
+    // uart_send_data(UART_NUM, v_send_ok,strlen(v_send_ok));
+    // uart_send_data(UART_NUM, (char *)&v_uart,1);
     return 0;
 }
 
-volatile uint32_t recv_flag = 0;
-char g_cmd[4];
-volatile uint8_t g_cmd_cnt = 0;
 int on_uart_recv(void *ctx)
 {
     char v_buf[8];
@@ -49,7 +46,6 @@ void io_mux_init(void)
 {
     fpioa_set_function(4, FUNC_UART1_RX + UART_NUM * 2);
     fpioa_set_function(5, FUNC_UART1_TX + UART_NUM * 2);
-    fpioa_set_function(24, FUNC_GPIOHS3);
 }
 
 int main()
@@ -57,10 +53,6 @@ int main()
     io_mux_init();
     plic_init();
     sysctl_enable_irq();
-
-    gpiohs_set_drive_mode(3, GPIO_DM_OUTPUT);
-    gpio_pin_value_t value = GPIO_PV_HIGH;
-    gpiohs_set_pin(3, value);
 
     uart_init(UART_NUM);
     uart_configure(UART_NUM, 115200, 8, UART_STOP_1, UART_PARITY_NONE);
