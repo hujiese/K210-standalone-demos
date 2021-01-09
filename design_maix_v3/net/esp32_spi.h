@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 /* clang-format off */
-#define ESP32_SPI_DEBUG                 (0)
+#define ESP32_SPI_DEBUG                 (1)
 
 #define ESP32_ADC_CH_NUM                (6)
 #define SPI_MAX_DMA_LEN 4000 //(4096-4)

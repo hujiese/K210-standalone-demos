@@ -24,7 +24,7 @@ uint8_t msg[MSGLEN];
 // static uint16_t _server_port[MAX_SOCK_NUM] = { 0, 0, 0, 0 };
 
 // ping 服务器IP
-uint8_t ip[] = {192, 168, 137, 1};
+uint8_t ip[] = {192, 168, 43, 1};
 
 // void allocate_socket(uint8_t sock)
 // {

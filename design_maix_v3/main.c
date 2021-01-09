@@ -12,6 +12,7 @@
 #include "sleep.h"
 #include "iomem.h"
 #include "util.h"
+#include "wdt.h"
 
 // WIFI热点和密码
 char* WIFI_SSID = "DaGuLion";
@@ -21,6 +22,20 @@ char* WIFI_PASSWD = "abc360abc";
 // #define TEST_CAMERA_DETECT
 uint16_t port = 8080;
 uint8_t sock = 1;
+
+#define WDT_TIMEOUT_REBOOT    1
+
+int wdt0_irq_cb(void *ctx)
+{
+    #if WDT_TIMEOUT_REBOOT
+    printf("%s:The system will reboot soon!\n", __func__);
+    while(1);
+    #else
+    printf("%s:The system is busy but not reboot!\n", __func__);
+    wdt_clear_interrupt(WDT_DEVICE_0);
+    #endif
+    return 0;
+}
 
 int main(void)
 {
@@ -56,6 +71,8 @@ int main(void)
 	{
         lcd_draw_string(5, lcd_str_x_index(), "Server start fail !", RED);
 	}
+    /* 启动看门狗，设置超时时间为10秒后调用中断函数wdt0_irq_cb */
+    wdt_init(WDT_DEVICE_0, 10000, wdt0_irq_cb, NULL);
     while(1)
     {
         int client_sock = esp32_spi_socket_available(sock);
@@ -69,6 +86,7 @@ int main(void)
 #ifdef TEST_CAMERA_DETECT
             yolo_object_detect();
 #endif
+
             if(available(client_sock))
             {
                 memset(msg, 0, MSGLEN);
@@ -85,7 +103,11 @@ int main(void)
                     printk("cmd error: %s", msg);
                 }
             }
+            /* 重置看门狗的计时器，重新开始计时 */
+            wdt_feed(WDT_DEVICE_0);
         }
+        /* 重置看门狗的计时器，重新开始计时 */
+        wdt_feed(WDT_DEVICE_0);
     }
 
     return 0;
