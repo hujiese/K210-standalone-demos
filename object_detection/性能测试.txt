@@ -1,0 +1,647 @@
+run time is :31.087002ms
+get out time is :12.615001ms
+draw time is :8.209001ms
+SPF:98.690002ms
+g_dvp_finish_flag finish :37.399002ms
+run time is :31.087002ms
+get out time is :12.479001ms
+draw time is :8.199000ms
+SPF:98.597008ms
+g_dvp_finish_flag finish :37.479000ms
+run time is :31.086002ms
+get out time is :12.622001ms
+draw time is :8.208000ms
+SPF:98.752007ms
+g_dvp_finish_flag finish :37.405003ms
+run time is :31.087002ms
+get out time is :12.481001ms
+draw time is :8.209001ms
+SPF:98.592003ms
+g_dvp_finish_flag finish :37.492001ms
+run time is :31.092001ms
+get out time is :12.597000ms
+draw time is :8.204000ms
+SPF:98.793007ms
+g_dvp_finish_flag finish :37.376003ms
+run time is :31.088001ms
+get out time is :12.594001ms
+draw time is :8.208000ms
+SPF:98.627007ms
+g_dvp_finish_flag finish :37.427002ms
+run time is :31.086002ms
+get out time is :12.483001ms
+draw time is :8.210000ms
+SPF:98.581001ms
+g_dvp_finish_flag finish :37.524002ms
+run time is :31.091002ms
+get out time is :12.745001ms
+draw time is :9.693001ms
+SPF:100.431007ms
+g_dvp_finish_flag finish :35.683002ms
+run time is :31.084002ms
+get out time is :12.632001ms
+draw time is :8.203000ms
+SPF:96.964005ms
+g_dvp_finish_flag finish :37.396000ms
+run time is :31.089001ms
+get out time is :12.621000ms
+draw time is :8.207001ms
+SPF:98.698006ms
+g_dvp_finish_flag finish :37.376003ms
+run time is :31.089001ms
+get out time is :12.628000ms
+draw time is :8.209001ms
+SPF:98.620003ms
+g_dvp_finish_flag finish :37.434002ms
+run time is :31.089001ms
+get out time is :12.627001ms
+draw time is :8.209001ms
+SPF:98.689003ms
+g_dvp_finish_flag finish :37.422001ms
+run time is :31.087002ms
+get out time is :12.603001ms
+draw time is :8.203000ms
+SPF:98.715004ms
+g_dvp_finish_flag finish :37.385002ms
+run time is :31.089001ms
+get out time is :12.610001ms
+draw time is :8.210000ms
+SPF:98.646004ms
+g_dvp_finish_flag finish :37.417004ms
+run time is :31.090002ms
+get out time is :12.489000ms
+draw time is :8.205000ms
+SPF:98.596008ms
+g_dvp_finish_flag finish :37.499001ms
+run time is :31.088001ms
+get out time is :12.624001ms
+draw time is :8.207001ms
+SPF:98.820007ms
+g_dvp_finish_flag finish :37.357002ms
+run time is :31.089001ms
+get out time is :12.499001ms
+draw time is :8.211000ms
+SPF:98.534004ms
+g_dvp_finish_flag finish :37.501003ms
+run time is :31.086002ms
+get out time is :12.621000ms
+draw time is :9.607000ms
+SPF:100.209007ms
+g_dvp_finish_flag finish :35.883003ms
+run time is :31.089001ms
+get out time is :12.747001ms
+draw time is :9.582001ms
+SPF:98.669006ms
+g_dvp_finish_flag finish :35.891003ms
+run time is :31.088001ms
+get out time is :12.613001ms
+draw time is :8.207001ms
+SPF:97.161003ms
+g_dvp_finish_flag finish :37.408001ms
+run time is :31.089001ms
+get out time is :12.747001ms
+draw time is :9.606001ms
+SPF:100.209007ms
+g_dvp_finish_flag finish :35.790001ms
+run time is :31.088001ms
+get out time is :12.624001ms
+draw time is :8.207001ms
+SPF:97.107002ms
+g_dvp_finish_flag finish :37.361000ms
+run time is :31.091002ms
+get out time is :12.624001ms
+draw time is :8.200001ms
+SPF:98.664001ms
+g_dvp_finish_flag finish :37.375000ms
+run time is :31.087002ms
+get out time is :12.621000ms
+draw time is :8.209001ms
+SPF:98.703003ms
+g_dvp_finish_flag finish :37.350002ms
+run time is :31.090002ms
+get out time is :12.639001ms
+draw time is :8.208000ms
+SPF:98.648003ms
+g_dvp_finish_flag finish :37.379002ms
+run time is :31.087002ms
+get out time is :12.627001ms
+draw time is :8.207001ms
+SPF:98.676003ms
+g_dvp_finish_flag finish :37.380001ms
+run time is :31.089001ms
+get out time is :12.615001ms
+draw time is :8.204000ms
+SPF:98.652008ms
+g_dvp_finish_flag finish :37.406002ms
+run time is :31.090002ms
+get out time is :12.475000ms
+draw time is :8.214001ms
+SPF:98.548004ms
+g_dvp_finish_flag finish :37.535004ms
+run time is :31.092001ms
+get out time is :12.623000ms
+draw time is :9.609000ms
+SPF:100.225006ms
+g_dvp_finish_flag finish :35.901001ms
+run time is :31.090002ms
+get out time is :12.642000ms
+draw time is :8.205000ms
+SPF:97.209007ms
+g_dvp_finish_flag finish :37.370003ms
+run time is :31.087002ms
+get out time is :12.622001ms
+draw time is :8.206000ms
+SPF:98.703003ms
+g_dvp_finish_flag finish :37.344002ms
+run time is :31.089001ms
+get out time is :12.743001ms
+draw time is :9.609000ms
+SPF:100.108002ms
+g_dvp_finish_flag finish :35.827003ms
+run time is :31.090002ms
+get out time is :12.631001ms
+draw time is :8.209001ms
+SPF:97.122002ms
+g_dvp_finish_flag finish :37.383003ms
+run time is :31.088001ms
+get out time is :12.478001ms
+draw time is :8.211000ms
+SPF:98.531006ms
+g_dvp_finish_flag finish :37.530003ms
+run time is :31.088001ms
+get out time is :12.622001ms
+draw time is :8.203000ms
+SPF:98.798004ms
+g_dvp_finish_flag finish :37.409000ms
+run time is :31.093002ms
+get out time is :12.488001ms
+draw time is :8.207001ms
+SPF:98.559006ms
+g_dvp_finish_flag finish :37.527000ms
+run time is :31.089001ms
+get out time is :12.626000ms
+draw time is :8.205000ms
+SPF:98.837006ms
+g_dvp_finish_flag finish :37.368000ms
+run time is :31.089001ms
+get out time is :12.484000ms
+draw time is :8.209001ms
+SPF:98.515007ms
+g_dvp_finish_flag finish :37.530003ms
+run time is :31.088001ms
+get out time is :12.608001ms
+draw time is :9.608001ms
+SPF:100.184006ms
+g_dvp_finish_flag finish :35.936001ms
+run time is :31.087002ms
+get out time is :12.614000ms
+draw time is :8.205000ms
+SPF:97.269005ms
+g_dvp_finish_flag finish :37.346001ms
+run time is :31.090002ms
+get out time is :12.736001ms
+draw time is :9.613001ms
+SPF:100.054008ms
+g_dvp_finish_flag finish :35.883003ms
+run time is :31.087002ms
+get out time is :12.503000ms
+draw time is :8.207001ms
+SPF:97.080002ms
+g_dvp_finish_flag finish :37.480003ms
+run time is :31.089001ms
+get out time is :12.481001ms
+draw time is :8.212001ms
+SPF:98.633003ms
+g_dvp_finish_flag finish :37.526001ms
+run time is :31.090002ms
+get out time is :12.485001ms
+draw time is :8.209001ms
+SPF:98.674004ms
+g_dvp_finish_flag finish :37.530003ms
+run time is :31.089001ms
+get out time is :12.623000ms
+draw time is :8.201000ms
+SPF:98.726006ms
+g_dvp_finish_flag finish :37.481003ms
+run time is :31.088001ms
+get out time is :12.638000ms
+draw time is :8.206000ms
+SPF:98.790001ms
+g_dvp_finish_flag finish :37.368000ms
+run time is :31.089001ms
+get out time is :12.618001ms
+draw time is :8.209001ms
+SPF:98.655006ms
+g_dvp_finish_flag finish :37.392002ms
+run time is :31.090002ms
+get out time is :12.643001ms
+draw time is :8.205000ms
+SPF:98.713005ms
+g_dvp_finish_flag finish :37.356003ms
+run time is :31.086002ms
+get out time is :12.494000ms
+draw time is :8.212001ms
+SPF:98.559006ms
+g_dvp_finish_flag finish :37.474003ms
+run time is :31.091002ms
+get out time is :12.497001ms
+draw time is :8.206000ms
+SPF:98.611008ms
+g_dvp_finish_flag finish :37.541000ms
+run time is :31.090002ms
+get out time is :12.490001ms
+draw time is :8.206000ms
+SPF:98.658005ms
+g_dvp_finish_flag finish :37.560001ms
+run time is :31.089001ms
+get out time is :12.760000ms
+draw time is :9.617001ms
+SPF:100.341003ms
+g_dvp_finish_flag finish :35.810001ms
+run time is :31.087002ms
+get out time is :12.630001ms
+draw time is :8.202001ms
+SPF:97.127007ms
+g_dvp_finish_flag finish :37.362003ms
+run time is :31.088001ms
+get out time is :12.630001ms
+draw time is :8.209001ms
+SPF:98.648003ms
+g_dvp_finish_flag finish :37.392002ms
+run time is :31.088001ms
+get out time is :12.624001ms
+draw time is :8.205000ms
+SPF:98.728004ms
+g_dvp_finish_flag finish :37.342003ms
+run time is :31.089001ms
+get out time is :12.504001ms
+draw time is :8.207001ms
+SPF:98.470001ms
+g_dvp_finish_flag finish :37.550003ms
+run time is :31.091002ms
+get out time is :12.620001ms
+draw time is :8.210000ms
+SPF:98.818008ms
+g_dvp_finish_flag finish :37.410004ms
+run time is :31.089001ms
+get out time is :12.498000ms
+draw time is :8.209001ms
+SPF:98.579002ms
+g_dvp_finish_flag finish :37.509003ms
+run time is :31.092001ms
+get out time is :12.608001ms
+draw time is :8.209001ms
+SPF:98.783005ms
+g_dvp_finish_flag finish :37.403000ms
+run time is :31.087002ms
+get out time is :12.630001ms
+draw time is :8.208000ms
+SPF:98.738007ms
+g_dvp_finish_flag finish :37.344002ms
+run time is :31.090002ms
+get out time is :12.500001ms
+draw time is :8.208000ms
+SPF:98.495003ms
+g_dvp_finish_flag finish :37.526001ms
+run time is :31.088001ms
+get out time is :12.616000ms
+draw time is :9.614000ms
+SPF:100.202003ms
+g_dvp_finish_flag finish :35.915001ms
+run time is :31.088001ms
+get out time is :12.504001ms
+draw time is :8.209001ms
+SPF:97.077003ms
+g_dvp_finish_flag finish :37.516003ms
+run time is :31.089001ms
+get out time is :12.629001ms
+draw time is :8.206000ms
+SPF:98.772003ms
+g_dvp_finish_flag finish :37.421001ms
+run time is :31.090002ms
+get out time is :12.630001ms
+draw time is :8.207001ms
+SPF:98.700005ms
+g_dvp_finish_flag finish :37.399002ms
+run time is :31.089001ms
+get out time is :12.637001ms
+draw time is :8.207001ms
+SPF:98.702003ms
+g_dvp_finish_flag finish :37.375000ms
+run time is :31.090002ms
+get out time is :12.619000ms
+draw time is :9.580001ms
+SPF:100.027008ms
+g_dvp_finish_flag finish :35.939003ms
+run time is :31.091002ms
+get out time is :12.628000ms
+draw time is :8.208000ms
+SPF:97.270004ms
+g_dvp_finish_flag finish :37.346001ms
+run time is :31.089001ms
+get out time is :12.755001ms
+draw time is :9.616000ms
+SPF:100.114006ms
+g_dvp_finish_flag finish :35.822002ms
+run time is :31.088001ms
+get out time is :12.606001ms
+draw time is :9.611000ms
+SPF:98.482002ms
+g_dvp_finish_flag finish :36.018002ms
+run time is :31.088001ms
+get out time is :12.751000ms
+draw time is :9.630000ms
+SPF:98.873001ms
+g_dvp_finish_flag finish :35.822002ms
+run time is :31.090002ms
+get out time is :12.731001ms
+draw time is :9.637000ms
+SPF:98.624008ms
+g_dvp_finish_flag finish :35.875000ms
+run time is :31.090002ms
+get out time is :12.744000ms
+draw time is :9.605000ms
+SPF:98.662003ms
+g_dvp_finish_flag finish :35.891003ms
+run time is :31.089001ms
+get out time is :12.624001ms
+draw time is :8.203000ms
+SPF:97.168007ms
+g_dvp_finish_flag finish :37.400002ms
+run time is :31.091002ms
+get out time is :12.486001ms
+draw time is :8.202001ms
+SPF:98.585007ms
+g_dvp_finish_flag finish :37.493000ms
+run time is :31.090002ms
+get out time is :12.620001ms
+draw time is :8.206000ms
+SPF:98.693008ms
+g_dvp_finish_flag finish :37.479000ms
+run time is :31.091002ms
+get out time is :12.492001ms
+draw time is :8.203000ms
+SPF:98.620003ms
+g_dvp_finish_flag finish :37.536003ms
+run time is :31.091002ms
+get out time is :12.480000ms
+draw time is :8.205000ms
+SPF:98.731003ms
+g_dvp_finish_flag finish :37.483002ms
+run time is :31.090002ms
+get out time is :12.619000ms
+draw time is :8.211000ms
+SPF:98.770004ms
+g_dvp_finish_flag finish :37.390003ms
+run time is :31.090002ms
+get out time is :12.742001ms
+draw time is :9.621000ms
+SPF:100.166008ms
+g_dvp_finish_flag finish :35.816002ms
+run time is :31.088001ms
+get out time is :12.479001ms
+draw time is :8.211000ms
+SPF:96.964005ms
+g_dvp_finish_flag finish :37.530003ms
+run time is :31.089001ms
+get out time is :12.626000ms
+draw time is :8.205000ms
+SPF:98.794006ms
+g_dvp_finish_flag finish :37.413002ms
+run time is :31.091002ms
+get out time is :12.621000ms
+draw time is :8.205000ms
+SPF:98.744003ms
+g_dvp_finish_flag finish :37.347000ms
+run time is :31.088001ms
+get out time is :12.626000ms
+draw time is :8.211000ms
+SPF:98.678001ms
+g_dvp_finish_flag finish :37.346001ms
+run time is :31.088001ms
+get out time is :12.619000ms
+draw time is :9.617001ms
+SPF:100.024002ms
+g_dvp_finish_flag finish :35.913002ms
+run time is :31.089001ms
+get out time is :12.749001ms
+draw time is :9.616000ms
+SPF:98.721008ms
+g_dvp_finish_flag finish :35.870003ms
+run time is :31.092001ms
+get out time is :12.751000ms
+draw time is :9.621000ms
+SPF:98.739006ms
+g_dvp_finish_flag finish :35.809002ms
+run time is :31.088001ms
+get out time is :12.759001ms
+draw time is :9.610001ms
+SPF:98.622002ms
+g_dvp_finish_flag finish :35.865002ms
+run time is :31.090002ms
+get out time is :12.631001ms
+draw time is :8.204000ms
+SPF:97.108002ms
+g_dvp_finish_flag finish :37.435001ms
+run time is :31.089001ms
+get out time is :12.622001ms
+draw time is :8.207001ms
+SPF:98.719002ms
+g_dvp_finish_flag finish :37.394001ms
+run time is :31.090002ms
+get out time is :12.637001ms
+draw time is :8.205000ms
+SPF:98.710007ms
+g_dvp_finish_flag finish :37.361000ms
+run time is :31.087002ms
+get out time is :12.623000ms
+draw time is :8.201000ms
+SPF:98.639008ms
+g_dvp_finish_flag finish :37.399002ms
+run time is :31.088001ms
+get out time is :12.615001ms
+draw time is :8.206000ms
+SPF:98.723007ms
+g_dvp_finish_flag finish :37.355003ms
+run time is :31.091002ms
+get out time is :12.619000ms
+draw time is :8.204000ms
+SPF:98.634003ms
+g_dvp_finish_flag finish :37.399002ms
+run time is :31.089001ms
+get out time is :12.616000ms
+draw time is :8.209001ms
+SPF:98.633003ms
+g_dvp_finish_flag finish :37.444000ms
+run time is :31.091002ms
+get out time is :12.490001ms
+draw time is :8.205000ms
+SPF:98.576004ms
+g_dvp_finish_flag finish :37.547001ms
+run time is :31.091002ms
+get out time is :12.511001ms
+draw time is :8.208000ms
+SPF:98.724007ms
+g_dvp_finish_flag finish :37.501003ms
+run time is :31.090002ms
+get out time is :12.628000ms
+draw time is :8.210000ms
+SPF:98.785004ms
+g_dvp_finish_flag finish :37.393002ms
+run time is :31.091002ms
+get out time is :12.747001ms
+draw time is :9.617001ms
+SPF:100.249008ms
+g_dvp_finish_flag finish :35.736000ms
+run time is :31.088001ms
+get out time is :12.626000ms
+draw time is :8.206000ms
+SPF:97.062004ms
+g_dvp_finish_flag finish :37.352001ms
+run time is :31.090002ms
+get out time is :12.634001ms
+draw time is :8.205000ms
+SPF:98.622002ms
+g_dvp_finish_flag finish :37.408001ms
+run time is :31.089001ms
+get out time is :12.756001ms
+draw time is :9.619000ms
+SPF:100.231003ms
+g_dvp_finish_flag finish :35.768002ms
+run time is :31.087002ms
+get out time is :12.616000ms
+draw time is :8.206000ms
+SPF:97.048004ms
+g_dvp_finish_flag finish :37.398003ms
+run time is :31.090002ms
+get out time is :12.500001ms
+draw time is :8.209001ms
+SPF:98.557007ms
+g_dvp_finish_flag finish :37.518002ms
+run time is :31.086002ms
+get out time is :12.628000ms
+draw time is :8.207001ms
+SPF:98.843002ms
+g_dvp_finish_flag finish :37.352001ms
+run time is :31.090002ms
+get out time is :12.493001ms
+draw time is :8.206000ms
+SPF:98.512001ms
+g_dvp_finish_flag finish :37.518002ms
+run time is :31.092001ms
+get out time is :12.636001ms
+draw time is :8.208000ms
+SPF:98.854004ms
+g_dvp_finish_flag finish :37.341003ms
+run time is :31.089001ms
+get out time is :12.641001ms
+draw time is :8.205000ms
+SPF:98.588005ms
+g_dvp_finish_flag finish :37.430000ms
+run time is :31.087002ms
+get out time is :12.624001ms
+draw time is :8.205000ms
+SPF:98.730003ms
+g_dvp_finish_flag finish :37.378002ms
+run time is :31.090002ms
+get out time is :12.490001ms
+draw time is :8.206000ms
+SPF:98.504005ms
+g_dvp_finish_flag finish :37.551003ms
+run time is :31.090002ms
+get out time is :12.617001ms
+draw time is :8.209001ms
+SPF:98.792007ms
+g_dvp_finish_flag finish :37.437000ms
+run time is :31.089001ms
+get out time is :12.473001ms
+draw time is :8.214001ms
+SPF:98.545006ms
+g_dvp_finish_flag finish :37.569000ms
+run time is :31.091002ms
+get out time is :12.621000ms
+draw time is :8.204000ms
+SPF:98.885002ms
+g_dvp_finish_flag finish :37.363003ms
+run time is :31.088001ms
+get out time is :12.496000ms
+draw time is :8.204000ms
+SPF:98.555008ms
+g_dvp_finish_flag finish :37.486000ms
+run time is :31.090002ms
+get out time is :12.488001ms
+draw time is :8.208000ms
+SPF:98.591003ms
+g_dvp_finish_flag finish :37.572002ms
+run time is :31.087002ms
+get out time is :12.481001ms
+draw time is :8.205000ms
+SPF:98.743004ms
+g_dvp_finish_flag finish :37.508003ms
+run time is :31.090002ms
+get out time is :12.486001ms
+draw time is :8.207001ms
+SPF:98.660004ms
+g_dvp_finish_flag finish :37.526001ms
+run time is :31.088001ms
+get out time is :12.487000ms
+draw time is :8.213000ms
+SPF:98.724007ms
+g_dvp_finish_flag finish :37.479000ms
+run time is :31.087002ms
+get out time is :12.611001ms
+draw time is :8.202001ms
+SPF:98.738007ms
+g_dvp_finish_flag finish :37.419003ms
+run time is :31.093002ms
+get out time is :12.635000ms
+draw time is :8.206000ms
+SPF:98.769005ms
+g_dvp_finish_flag finish :37.327003ms
+run time is :31.088001ms
+get out time is :12.619000ms
+draw time is :8.206000ms
+SPF:98.611008ms
+g_dvp_finish_flag finish :37.394001ms
+run time is :31.092001ms
+get out time is :12.480000ms
+draw time is :8.203000ms
+SPF:98.568008ms
+g_dvp_finish_flag finish :37.505001ms
+run time is :31.090002ms
+get out time is :12.618001ms
+draw time is :8.208000ms
+SPF:98.780006ms
+g_dvp_finish_flag finish :37.402000ms
+run time is :31.090002ms
+get out time is :12.622001ms
+draw time is :8.205000ms
+SPF:98.658005ms
+g_dvp_finish_flag finish :37.421001ms
+run time is :31.090002ms
+get out time is :12.480000ms
+draw time is :8.208000ms
+SPF:98.550003ms
+g_dvp_finish_flag finish :37.549004ms
+run time is :31.089001ms
+get out time is :12.611001ms
+draw time is :8.209001ms
+SPF:98.829002ms
+g_dvp_finish_flag finish :37.398003ms
+run time is :31.088001ms
+get out time is :12.483001ms
+draw time is :8.201000ms
+SPF:98.560005ms
+g_dvp_finish_flag finish :37.515003ms
+run time is :31.091002ms
+get out time is :12.610001ms
+draw time is :8.206000ms
+SPF:98.835007ms
+g_dvp_finish_flag finish :37.357002ms
+run time is :31.092001ms
+get out time is :12.620001ms
+draw time is :8.210000ms
+SPF:98.636002ms
+g_dvp_finish_flag finish :37.399002ms
+run time is :31.088001ms
+get out time is :12.620001ms

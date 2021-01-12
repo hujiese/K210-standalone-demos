@@ -39,7 +39,7 @@ void lcd_init(void)
     data = 0x55;
     tft_write_byte(&data, 1);
 
-    tft_write_command(INVERSION_DISPLAY_ON);
+    // tft_write_command(INVERSION_DISPLAY_ON);
 
     lcd_set_direction(DIR_YX_LRUD);
 

@@ -302,14 +302,18 @@ int main(void)
     /* system start */
     printf("System start\n");
 
+    uint64_t time_last = sysctl_get_time_us();
+    uint64_t time_now = sysctl_get_time_us();
 
     while (1)
     {
+        time_last = sysctl_get_time_us();
         g_dvp_finish_flag = 0;
         
         while (!g_dvp_finish_flag)
             ;
-            
+        time_now = sysctl_get_time_us();
+        printf("g_dvp_finish_flag finish :%fms\n", (time_now - time_last)/1000.0);
         /* run obj detect */
 		memset(g_ai_od_buf, 127, 320*256*3);
 		for (uint32_t cc = 0; cc < 3; cc++)
@@ -319,26 +323,41 @@ int main(void)
 
         /*运行模型*/
         g_ai_done_flag = 0;
+        uint64_t before_run;
+        uint64_t after_run;
+        before_run = sysctl_get_time_us();
         kpu_run_kmodel(&obj_detect_task, g_ai_od_buf, DMAC_CHANNEL5, ai_done, NULL);
         while(!g_ai_done_flag);
-        
+        after_run = sysctl_get_time_us();
+        printf("run time is :%fms\n", (after_run - before_run)/1000.0);
         /*获取KPU处理结果*/
         float *output;
         size_t output_size;
+        uint64_t before_getout;
+        uint64_t after_getout;
+        before_getout = sysctl_get_time_us();
         kpu_get_output(&obj_detect_task, 0, (uint8_t **)&output, &output_size);
         
         /*获取输出层的结果*/
         obj_detect_rl.input = output;
         region_layer_run(&obj_detect_rl, &obj_detect_info);
-		
+		after_getout = sysctl_get_time_us();
+        printf("get out time is :%fms\n", (after_getout - before_getout)/1000.0);
+
+        uint64_t before_draw;
+        uint64_t after_draw;
+        before_draw = sysctl_get_time_us();
         /* 显示视频图像*/
 		lcd_draw_picture(0, 0, 320, 240, (uint32_t *)display_buf_addr);
 
         /* 画识别结果 */
 		region_layer_draw_boxes(&obj_detect_rl, drawboxes); 
-
+        after_draw = sysctl_get_time_us();
+        printf("draw time is :%fms\n", (after_draw - before_draw)/1000.0);
         
 		//g_dvp_finish_flag = 0;
+        time_now = sysctl_get_time_us();
+        printf("SPF:%fms\n", (time_now - time_last)/1000.0);
 
 		
     }
